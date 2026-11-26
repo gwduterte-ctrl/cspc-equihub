@@ -1,0 +1,15 @@
+<% const ok = e.status === 'available' && e.available_qty > 0; %>
+<article class="card equip">
+  <a class="img-wrap" href="/equipments/<%= e.id %>" data-modal tabindex="-1" aria-hidden="true">
+    <img src="<%= e.image ? '/uploads/equipment/' + e.image : '/img/placeholder-equipment.svg' %>" alt="" loading="lazy" data-fallback="/img/placeholder-equipment.svg">
+    <span class="tag"><%= e.dept_code %></span>
+  </a>
+  <div class="card-body">
+    <h3><a href="/equipments/<%= e.id %>" data-modal><%= e.name %></a></h3>
+    <p class="desc-clamp"><%= e.description || 'No description yet.' %></p>
+    <div class="card-foot">
+      <span class="qty <%= ok ? '' : 'qty-out' %>"><span class="material-icons" aria-hidden="true">inventory</span><%= ok ? e.available_qty + ' available' : (e.status === 'available' ? 'Out of stock' : statusLabel[e.status]) %></span>
+      <% if (ok) { %><a class="btn btn-sm" href="/borrow/<%= e.id %>" data-modal>Borrow</a><% } else { %><span class="btn btn-sm is-disabled" aria-disabled="true">Borrow</span><% } %>
+    </div>
+  </div>
+</article>

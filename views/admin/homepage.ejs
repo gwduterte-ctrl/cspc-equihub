@@ -1,0 +1,18 @@
+<%- include('../partials/head', { title, shell, section }) %>
+<div class="toolbar"><p class="muted small">Edit what visitors read on the homepage. Equipment, categories and departments shown there come from the pages in this menu; mark equipment as <b>featured</b> to list it first.</p>
+  <a class="btn btn-outline btn-sm" href="/" target="_blank" rel="noopener"><span class="material-icons" aria-hidden="true">open_in_new</span>View homepage</a></div>
+<%- include('../partials/errors', { errors }) %>
+<form method="post" action="/admin/homepage" class="form card pad settings-form" novalidate>
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <% fields.forEach(function (f) { %>
+  <div class="field <%= f.long ? 'wide' : '' %>">
+    <label for="s-<%= f.key %>"><%= f.label %></label>
+    <% if (f.long) { %><textarea id="s-<%= f.key %>" name="<%= f.key %>" rows="2" maxlength="<%= f.max %>" required><%= values[f.key] %></textarea>
+    <% } else if (f.number) { %><input id="s-<%= f.key %>" name="<%= f.key %>" type="number" min="2" max="8" value="<%= values[f.key] %>" required>
+    <% } else { %><input id="s-<%= f.key %>" name="<%= f.key %>" maxlength="<%= f.max %>" value="<%= values[f.key] %>" required><% } %>
+  </div>
+  <% }); %>
+  <div class="btn-row wide"><button class="btn btn-sm" type="submit">Save changes</button></div>
+</form>
+<form method="post" action="/admin/homepage/reset" data-confirm="All homepage text you edited will go back to the original wording." data-confirm-title="Restore defaults?" data-confirm-yes="Yes, restore" data-confirm-no="No, keep my text" data-confirm-tone="primary" class="reset-form"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-ghost btn-sm" type="submit">Restore defaults</button></form>
+<%- include('../partials/foot', { shell }) %>

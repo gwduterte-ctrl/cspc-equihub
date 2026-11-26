@@ -1,0 +1,27 @@
+<% const navUser = locals.user || null; const unreadCount = locals.unread || 0; const navCsrfToken = locals.csrfToken || ''; %>
+<header class="site-nav">
+  <div class="container nav-row">
+    <a class="brand" href="/"><img src="/img/logo-sm.png" alt="" width="38" height="38"><span>CSPC <b>EquiHub</b></span></a>
+    <% if (shell === 'auth' && locals.authAlt) { %>
+    <div class="auth-alt"><% if (authAlt.text) { %><span><%= authAlt.text %></span><% } %><a class="btn btn-sm" href="<%= authAlt.href %>"><%= authAlt.label %></a></div>
+    <% } %>
+    <% if (shell !== 'auth') { %>
+    <button class="icon-btn nav-toggle" type="button" data-toggle="nav-menu" aria-label="Toggle menu" aria-expanded="false"><span class="material-icons">menu</span></button>
+    <nav class="nav-menu" id="nav-menu" aria-label="Main">
+      <a href="/" class="<%= locals.currentPath === '/' ? 'is-active' : '' %>"><span class="material-icons" aria-hidden="true">home</span>Homepage</a>
+      <a href="/equipments" class="<%= (locals.currentPath || '').indexOf('/equipments') === 0 ? 'is-active' : '' %>"><span class="material-icons" aria-hidden="true">inventory_2</span>Equipments</a>
+      <a href="/about" class="<%= locals.currentPath === '/about' ? 'is-active' : '' %>"><span class="material-icons" aria-hidden="true">info</span>About</a>
+    </nav>
+    <div class="nav-user">
+      <% if (navUser && navUser.role === 'user') { %>
+        <a class="icon-btn has-badge" href="/account/requests#notifications" aria-label="Notifications<%= unreadCount ? ' (' + unreadCount + ' unread)' : '' %>"><span class="material-icons">notifications</span><% if (unreadCount) { %><i class="badge"><%= unreadCount > 9 ? '9+' : unreadCount %></i><% } %></a>
+        <a class="btn btn-ghost btn-sm" href="/account/requests"><span class="material-icons" aria-hidden="true">person</span><%= navUser.full_name.split(' ')[0] %></a>
+        <form method="post" action="/logout" class="inline"><input type="hidden" name="_csrf" value="<%= navCsrfToken %>"><button class="icon-btn" type="submit" aria-label="Log out"><span class="material-icons">logout</span></button></form>
+      <% } else { %>
+        <a class="btn btn-ghost btn-sm" href="/login">Log in</a>
+        <a class="btn btn-sm" href="/register">Sign up</a>
+      <% } %>
+    </div>
+    <% } %>
+  </div>
+</header>

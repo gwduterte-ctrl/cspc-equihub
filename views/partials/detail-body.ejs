@@ -1,0 +1,29 @@
+<% const ok = e.status === 'available' && e.available_qty > 0; const isUser = user && user.role === 'user'; %>
+<article class="detail-card" aria-labelledby="d-title">
+  <div class="detail-media">
+    <img src="<%= e.image ? '/uploads/equipment/' + e.image : '/img/placeholder-equipment.svg' %>" alt="<%= e.name %>" data-fallback="/img/placeholder-equipment.svg">
+    <div class="media-top">
+      <%- include('dept-logo', { code: e.dept_code, name: e.dept_name, logo: e.dept_logo }) %>
+      <span class="media-cat"><span class="material-icons" aria-hidden="true">category</span><%= e.category_name %></span>
+      <%- include('pill', { s: e.status }) %>
+    </div>
+  </div>
+  <div class="detail-info">
+    <p class="eyebrow dark"><%= e.dept_name %></p>
+    <h1 id="d-title"><%= e.name %></h1>
+    <div class="avail">
+      <div class="avail-row"><span class="qty <%= ok ? '' : 'qty-out' %>"><span class="material-icons" aria-hidden="true">inventory</span><%= e.available_qty %> of <%= e.total_qty %> available</span></div>
+      <progress value="<%= e.available_qty %>" max="<%= e.total_qty || 1 %>" aria-label="Availability"></progress>
+    </div>
+    <h2 class="sm-h">Description</h2>
+    <p class="desc"><%= e.description || 'No description provided.' %></p>
+    <dl class="mini-facts">
+      <div><dt>Department</dt><dd><%= e.dept_name %></dd></div>
+      <div><dt>Category</dt><dd><%= e.category_name %></dd></div>
+      <div><dt>Status</dt><dd><%= statusLabel[e.status] %></dd></div>
+    </dl>
+    <% if (ok) { %><a class="btn" href="/borrow/<%= e.id %>" data-modal><span class="material-icons" aria-hidden="true">edit_calendar</span>Borrow this equipment</a>
+    <% } else { %><span class="btn is-disabled" aria-disabled="true">Currently unavailable</span><% } %>
+    <% if (!isUser) { %><p class="muted small login-hint"><span class="material-icons" aria-hidden="true">lock</span>Only logged-in CSPC accounts can borrow. <a href="/login">Log in</a> or <a href="/register">sign up</a>.</p><% } %>
+  </div>
+</article>

@@ -1,0 +1,16 @@
+<%- include('../partials/head', { title, shell, section }) %>
+<div class="toolbar"><p class="muted small">Categories are grouped per department.</p><a class="btn btn-sm" href="/admin/categories/new"><span class="material-icons" aria-hidden="true">add</span>Add category</a></div>
+<% if (categories.length === 0) { %><div class="empty-state"><span class="material-icons big" aria-hidden="true">category</span><p>No categories yet.</p></div>
+<% } else { %>
+<div class="table-wrap"><table>
+  <caption class="sr-only">Categories</caption>
+  <thead><tr><th scope="col">Category</th><th scope="col">Department</th><th scope="col" class="num">Items</th><th scope="col"><span class="sr-only">Actions</span></th></tr></thead>
+  <tbody><% categories.forEach(function (c) { %>
+    <tr><td><div class="cell-item"><img src="<%= c.image ? '/uploads/categories/' + c.image : '/img/placeholder-category.svg' %>" alt="" width="40" height="40" data-fallback="/img/placeholder-category.svg"><b><%= c.name %></b></div></td>
+      <td><%= c.dept_code %> - <%= c.dept_name %></td><td class="num"><a href="/admin/equipment?category=<%= c.id %>"><%= c.items %></a></td>
+      <td class="actions"><a class="icon-btn" href="/admin/categories/<%= c.id %>/edit" aria-label="Edit <%= c.name %>"><span class="material-icons">edit</span></a>
+        <form method="post" action="/admin/categories/<%= c.id %>/delete" class="inline" data-confirm="This removes <%= c.name %> and ALL of the equipment inside it." data-confirm-title="Delete category?" data-confirm-yes="Yes, delete!" data-confirm-no="No, keep it."><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="icon-btn danger" type="submit" aria-label="Delete <%= c.name %>"><span class="material-icons">delete</span></button></form></td></tr>
+  <% }); %></tbody>
+</table></div>
+<% } %>
+<%- include('../partials/foot', { shell }) %>

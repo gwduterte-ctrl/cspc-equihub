@@ -1,0 +1,81 @@
+<%- include('../partials/head', { title, shell }) %>
+
+<section class="ab-hero">
+  <div class="ab-hero-bg" aria-hidden="true"></div>
+  <div class="container">
+    <img class="ab-badge" src="/img/logo-md.png" alt="CSPC EquiHub logo" width="120" height="120">
+    <p class="eyebrow">About the system</p>
+    <h1>About CSPC <span>EquiHub</span></h1>
+    <p class="lead">The campus equipment borrowing system of Camarines Sur Polytechnic Colleges.</p>
+    <div class="btn-row">
+      <a class="btn btn-light" href="/equipments#catalog"><span class="material-icons" aria-hidden="true">inventory_2</span>Browse Equipment</a>
+      <a class="btn btn-line" href="#ab-steps"><span class="material-icons" aria-hidden="true">play_circle</span>How it works</a>
+    </div>
+  </div>
+</section>
+
+<div class="container ab-stats" aria-label="EquiHub at a glance">
+  <div class="ab-stat"><b><%= stats.items %></b><span>Equipment items</span></div>
+  <div class="ab-stat"><b><%= stats.departments %></b><span>Departments</span></div>
+  <div class="ab-stat"><b><%= stats.categories %></b><span>Categories</span></div>
+  <div class="ab-stat"><b>4</b><span>Easy steps to borrow</span></div>
+</div>
+
+<section class="container ab-what">
+  <div class="ab-photo"><img src="/img/cspc/campus.jpg" alt="CSPC campus" loading="lazy" data-fallback="/img/placeholder-campus.svg"></div>
+  <div>
+    <p class="eyebrow dark">What it is</p>
+    <h2 class="ab-h2">One place to borrow <span>campus equipment</span></h2>
+    <p>EquiHub (<i>hiram</i> means &ldquo;borrow&rdquo;) lets students, faculty and employees request equipment from their department online, and lets administrators track every item from request to return.</p>
+    <ul class="ab-chips">
+      <li><span class="material-icons" aria-hidden="true">edit_calendar</span>Request online</li>
+      <li><span class="material-icons" aria-hidden="true">photo_camera</span>Return with proof</li>
+      <li><span class="material-icons" aria-hidden="true">notifications_active</span>Reminders and updates</li>
+    </ul>
+  </div>
+</section>
+
+<section class="container ab-sec" id="ab-steps" aria-labelledby="ab-steps-h">
+  <div class="ab-sec-head"><p class="eyebrow dark">How it works</p><h2 id="ab-steps-h"><%= site.how_title %> <span><%= site.how_accent %></span></h2><p class="muted"><%= site.how_lead %></p></div>
+  <div class="ab-steps">
+    <% [['login', 1], ['search', 2], ['edit_calendar', 3], ['assignment_return', 4]].forEach(function (st) { %>
+    <article class="ab-step"><span class="ab-step-ic"><span class="material-icons" aria-hidden="true"><%= st[0] %></span></span><h3><%= site['step' + st[1] + '_title'] %></h3><p><%= site['step' + st[1] + '_text'] %></p></article>
+    <% }); %>
+  </div>
+</section>
+
+<section class="container ab-sec" aria-labelledby="ab-rules-h">
+  <div class="ab-sec-head"><p class="eyebrow dark">Before you borrow</p><h2 id="ab-rules-h">Borrowing <span>rules</span></h2></div>
+  <div class="ab-rules">
+    <div class="ab-rule"><span class="material-icons" aria-hidden="true">login</span><div><h3>Log in first</h3><p>Log in with your CSPC account before sending a request.</p></div></div>
+    <div class="ab-rule"><span class="material-icons" aria-hidden="true">event_available</span><div><h3>Dates and purpose</h3><p>Every request needs a borrow date, a return date and a purpose.</p></div></div>
+    <div class="ab-rule"><span class="material-icons" aria-hidden="true">photo_camera</span><div><h3>Return with a photo</h3><p>Upload a photo as proof when you return the item. An admin confirms it.</p></div></div>
+    <div class="ab-rule"><span class="material-icons" aria-hidden="true">assignment_return</span><div><h3>One at a time</h3><p>You cannot borrow again until your previous equipment is confirmed as returned.</p></div></div>
+    <div class="ab-rule"><span class="material-icons" aria-hidden="true">block</span><div><h3>Fair use</h3><p>Accounts may be blocked from borrowing for misuse or repeated late returns.</p></div></div>
+    <div class="ab-rule"><span class="material-icons" aria-hidden="true">notifications_active</span><div><h3>Stay updated</h3><p>You get a notification for every decision, and a reminder when a return is overdue.</p></div></div>
+  </div>
+</section>
+
+<section class="container ab-sec" aria-labelledby="ab-who-h">
+  <div class="ab-sec-head"><p class="eyebrow dark">Who can borrow</p><h2 id="ab-who-h">Open to the <span>CSPC community</span></h2></div>
+  <div class="ab-who">
+    <div class="ab-who-card"><span class="material-icons" aria-hidden="true">school</span><h3>Students</h3><p>For class demonstrations, projects and organization events.</p></div>
+    <div class="ab-who-card"><span class="material-icons" aria-hidden="true">groups</span><h3>Faculty</h3><p>For lectures, laboratory work and department activities.</p></div>
+    <div class="ab-who-card"><span class="material-icons" aria-hidden="true">badge</span><h3>Employees</h3><p>For office work, programs and campus events.</p></div>
+  </div>
+</section>
+
+<section class="container">
+  <div class="ab-data">
+    <span class="ab-data-ic"><span class="material-icons" aria-hidden="true">verified_user</span></span>
+    <div class="ab-data-text"><h2>Your data is protected</h2><p>We only collect what is needed to process borrowing (name, CSPC e-mail, ID number and department) in line with the Data Privacy Act of 2012 (RA 10173). You can download your data from <a href="/account/profile">your profile</a>.</p></div>
+    <a class="btn btn-light" href="/privacy">Read the Privacy Notice</a>
+  </div>
+</section>
+
+<section class="container ab-cta">
+  <h2>Ready to borrow?</h2>
+  <p class="muted">Find the equipment you need and send your request in one short form.</p>
+  <div class="btn-row"><a class="btn" href="/equipments#catalog"><span class="material-icons" aria-hidden="true">inventory_2</span>Browse Equipment</a><% if (!(user && user.role === 'user')) { %><a class="btn btn-outline" href="/login">Log in</a><% } %></div>
+</section>
+<%- include('../partials/foot', { shell }) %>

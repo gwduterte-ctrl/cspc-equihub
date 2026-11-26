@@ -1,0 +1,13 @@
+<%# Result dialog: small rounded card (icon, title, message, button). Closes itself after ~5 s, or with OK / Esc / click outside. %>
+<% if (locals.flash) { %>
+<div class="dlg dlg--<%= flash.type %> is-result" id="flash-dlg" role="alertdialog" aria-modal="true" aria-labelledby="flash-t" aria-describedby="flash-m">
+  <div class="dlg-backdrop" data-dlg-close></div>
+  <div class="dlg-card" tabindex="-1">
+    <span class="dlg-ic"><span class="material-icons" aria-hidden="true"><%= flash.type === 'error' ? 'warning_amber' : flash.type === 'info' ? 'info_outline' : 'check_circle_outline' %></span></span>
+    <h2 id="flash-t"><%= flash.type === 'error' ? 'Action not completed' : flash.type === 'info' ? 'Heads up' : 'Success' %></h2>
+    <p id="flash-m"><%= flash.text %></p>
+    <div class="dlg-actions single"><button class="dlg-btn dlg-ok" type="button" data-dlg-close>OK</button></div>
+    <i class="dlg-timer" aria-hidden="true"></i>
+  </div>
+</div>
+<% } %>

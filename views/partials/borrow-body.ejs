@@ -1,0 +1,29 @@
+<article class="detail-card" aria-labelledby="b-title">
+  <div class="detail-media">
+    <img src="<%= e.image ? '/uploads/equipment/' + e.image : '/img/placeholder-equipment.svg' %>" alt="<%= e.name %>" data-fallback="/img/placeholder-equipment.svg">
+    <div class="media-top">
+      <%- include('dept-logo', { code: e.dept_code, name: e.dept_name, logo: e.dept_logo }) %>
+      <span class="media-cat"><span class="material-icons" aria-hidden="true">category</span><%= e.category_name %></span>
+      <%- include('pill', { s: e.status }) %>
+    </div>
+  </div>
+  <div class="detail-info">
+    <p class="eyebrow dark"><%= e.dept_name %> &middot; <%= e.available_qty %> available</p>
+    <h1 id="b-title">Borrow <%= e.name %></h1>
+    <% if (user.is_blocked) { %><div class="errors" role="alert"><p><span class="material-icons" aria-hidden="true">block</span>Your account is blocked from borrowing.</p><ul><li><%= user.block_reason %></li></ul></div><% } %>
+    <% if (outstanding) { %><div class="errors" role="alert"><p><span class="material-icons" aria-hidden="true">assignment_return</span>Return your previous equipment first.</p><ul><li>Request <a href="/account/requests"><%= outstanding.reference_no %></a> has not been confirmed as returned.</li></ul></div><% } %>
+    <%- include('errors', { errors }) %>
+    <form method="post" action="/borrow/<%= e.id %>" class="form form-full" novalidate <%= locals.modal ? 'data-modal-form' : '' %>>
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="field"><label for="quantity">Quantity</label><input id="quantity" name="quantity" type="number" min="1" max="<%= e.available_qty %>" value="<%= old.quantity || 1 %>" required></div>
+      <div class="row2">
+        <div class="field"><label for="borrow_date">Borrow date</label><input id="borrow_date" name="borrow_date" type="date" min="<%= today %>" value="<%= old.borrow_date || '' %>" required data-borrow></div>
+        <div class="field"><label for="return_date">Return date</label><input id="return_date" name="return_date" type="date" min="<%= today %>" value="<%= old.return_date || '' %>" required data-return aria-describedby="rd-help"></div>
+      </div>
+      <small id="rd-help" class="muted form-note">Maximum borrowing period: <%= maxDays %> days.</small>
+      <div class="field"><label for="purpose">Purpose</label><textarea id="purpose" name="purpose" rows="3" maxlength="255" required><%= old.purpose || '' %></textarea><small class="muted">For example: thesis defense, class demonstration, org event.</small></div>
+      <p class="muted small">All fields are required. You will be notified when an admin reviews your request.</p>
+      <button class="btn" type="submit" <%= (user.is_blocked || outstanding) ? 'disabled' : '' %>><span class="material-icons" aria-hidden="true">send</span>Submit request</button>
+    </form>
+  </div>
+</article>

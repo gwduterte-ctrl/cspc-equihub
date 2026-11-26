@@ -1,0 +1,37 @@
+<%- include('../partials/head', { title, shell, section }) %>
+<a class="small back" href="/admin/users"><span class="material-icons" aria-hidden="true">chevron_left</span>All users</a>
+<% const out = reqs.filter(function (r) { return r.status === 'approved' || r.status === 'return_submitted'; }).length; const late = reqs.filter(function (r) { return r.overdue; }).length; %>
+<div class="dash-grid">
+  <dl class="facts card pad">
+    <div><dt>Name</dt><dd><%= u.full_name %></dd></div>
+    <div><dt>E-mail</dt><dd><%= u.email %></dd></div>
+    <div><dt>Type</dt><dd><%= u.user_type %></dd></div>
+    <div><dt>ID number</dt><dd><%= u.id_number || '-' %></dd></div>
+    <div><dt>Joined</dt><dd><%= fmtDate(u.created_at) %></dd></div>
+    <div><dt>Unreturned</dt><dd><%= out %><% if (late) { %> <span class="pill pill--overdue"><%= late %> overdue</span><% } %></dd></div>
+    <div><dt>Borrowing</dt><dd><% if (u.is_blocked) { %><span class="pill pill--rejected">Blocked</span> <span class="muted small"><%= u.block_reason %></span><% } else { %><span class="pill pill--returned">Allowed</span><% } %></dd></div>
+  </dl>
+  <section class="card pad">
+    <h2>Borrowing access</h2>
+    <% if (u.is_blocked) { %>
+      <form method="post" action="/admin/users/<%= u.id %>/unblock"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-outline btn-sm" type="submit">Unblock user</button></form>
+    <% } else { %>
+      <form method="post" action="/admin/users/<%= u.id %>/block" class="form"><input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <div class="field"><label for="reason">Reason</label><input id="reason" name="reason" maxlength="255" placeholder="Shown to the user" required></div>
+        <button class="btn btn-sm danger-btn" type="submit"><span class="material-icons" aria-hidden="true">block</span>Block from borrowing</button></form>
+    <% } %>
+  </section>
+</div>
+<h2>Requests</h2>
+<% if (reqs.length === 0) { %><p class="muted small">No requests yet.</p><% } else { %>
+<div class="table-wrap"><table>
+  <caption class="sr-only">Requests</caption>
+  <thead><tr><th scope="col">Reference</th><th scope="col">Equipment</th><th scope="col">Borrow</th><th scope="col">Return by</th><th scope="col">Status</th></tr></thead>
+  <tbody><% reqs.forEach(function (r) { %><tr><td><a href="/admin/requests/<%= r.id %>"><%= r.reference_no %></a></td><td><%= r.equipment_name %> <span class="muted">x<%= r.quantity %></span></td><td><%= fmtDate(r.borrow_date) %></td>
+    <td><%= fmtDate(r.return_date) %><% if (r.overdue) { %> <span class="pill pill--overdue"><%= r.days_overdue %>d late</span><% } %></td><td><%- include('../partials/pill', { s: r.status }) %></td></tr><% }); %></tbody>
+</table></div>
+<% } %>
+<h2>Recent activity</h2>
+<ul class="list"><% logs.forEach(function (l) { %><li><span class="material-icons" aria-hidden="true">bolt</span><div><%= l.action.replace(/_/g, ' ') %><p class="muted small"><%= fmtDateTime(l.created_at) %><%= l.details ? ' - ' + l.details : '' %></p></div></li><% }); %>
+<% if (logs.length === 0) { %><li><div class="muted small">No activity yet.</div></li><% } %></ul>
+<%- include('../partials/foot', { shell }) %>

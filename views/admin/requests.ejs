@@ -1,0 +1,42 @@
+<%- include('../partials/head', { title, shell, section }) %>
+<% const tabs = [['', 'All', counts.all, 'apps'], ['pending', 'Pending', counts.pending, 'hourglass_empty'], ['return_submitted', 'To verify', counts.return_submitted, 'photo_camera'],
+   ['approved', 'Borrowed', counts.approved, 'assignment_turned_in'], ['overdue', 'Overdue', counts.overdue, 'schedule'], ['returned', 'Returned', counts.returned, 'task_alt'],
+   ['rejected', 'Declined', counts.rejected, 'block'], ['cancelled', 'Cancelled', counts.cancelled, 'cancel']]; %>
+<nav class="req-tabs" aria-label="Filter by status">
+  <% tabs.forEach(function (t) { %>
+  <a class="req-tab <%= (status || '') === t[0] ? 'is-active' : '' %> <%= t[0] === 'overdue' && t[2] ? 'is-alert' : '' %>" href="/admin/requests<%= t[0] ? '?status=' + t[0] : '' %>"><span class="material-icons" aria-hidden="true"><%= t[3] %></span><%= t[1] %><b><%= t[2] %></b></a>
+  <% }); %>
+</nav>
+<div class="toolbar">
+  <form method="get" action="/admin/requests" class="toolbar-form" role="search">
+    <% if (status) { %><input type="hidden" name="status" value="<%= status %>"><% } %>
+    <label class="sr-only" for="q">Search requests</label><input id="q" type="search" name="q" value="<%= q %>" maxlength="80" placeholder="Borrower, reference or equipment"><button class="btn" type="submit">Search</button>
+    <% if (q) { %><a class="btn btn-ghost" href="/admin/requests<%= status ? '?status=' + status : '' %>">Clear</a><% } %>
+  </form>
+  <a class="btn" href="/admin/requests/new"><span class="material-icons" aria-hidden="true">add</span>New request</a>
+</div>
+
+<% if (items.length === 0) { %>
+  <div class="empty-state dcard"><span class="material-icons big" aria-hidden="true">assignment</span><p>No requests match this view.</p><a class="btn btn-sm" href="/admin/requests">Show all requests</a></div>
+<% } else { %>
+<div class="table-wrap req-master"><table class="req-table">
+  <caption class="sr-only">All borrow requests. Select a row to open it.</caption>
+  <thead><tr><th scope="col">Borrower</th><th scope="col">Equipment</th><th scope="col">Schedule</th><th scope="col">Status</th><th scope="col" class="end"><span class="sr-only">Photo</span></th></tr></thead>
+  <tbody>
+    <% items.forEach(function (r) { const left = -r.days_overdue; %>
+    <tr data-row-link>
+      <td><a href="/admin/requests/<%= r.id %>" data-modal><b><%= r.full_name %></b></a><p class="cell-sub"><%= r.email %></p></td>
+      <td><b><%= r.equipment_name %></b> <span class="muted">x<%= r.quantity %></span><p class="cell-sub"><%= r.dept_code %> &middot; <%= r.category_name %></p></td>
+      <td class="nowrap"><span class="cell-dates"><%= fmtDate(r.borrow_date) %> <span class="material-icons" aria-hidden="true">arrow_right_alt</span> <%= fmtDate(r.return_date) %></span>
+        <% if (r.status === 'approved') { %><span class="tl-chip <%= r.overdue ? 'late' : left === 0 ? 'soon' : 'ok' %>"><%= r.overdue ? r.days_overdue + ' day' + (r.days_overdue === 1 ? '' : 's') + ' late' : left === 0 ? 'Due today' : 'Due in ' + left + ' day' + (left === 1 ? '' : 's') %></span>
+        <% } else if (r.status === 'return_submitted') { %><span class="tl-chip soon">Photo uploaded</span>
+        <% } else if (r.status === 'returned') { %><span class="tl-chip ok">Returned <%= fmtDate(r.returned_at) %></span><% } %></td>
+      <td class="nowrap"><%- include('../partials/pill', { s: r.status }) %></td>
+      <td class="thumb-cell"><img class="req-thumb" src="<%= r.equipment_image ? '/uploads/equipment/' + r.equipment_image : '/img/placeholder-equipment.svg' %>" alt="" width="44" height="44" loading="lazy" data-fallback="/img/placeholder-equipment.svg"><span class="material-icons row-chev" aria-hidden="true">chevron_right</span></td>
+    </tr>
+    <% }); %>
+  </tbody>
+</table></div>
+<% } %>
+<%- include('../partials/admin-popup') %>
+<%- include('../partials/foot', { shell }) %>

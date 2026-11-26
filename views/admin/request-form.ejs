@@ -1,0 +1,30 @@
+<%- include('../partials/head', { title, shell, section }) %>
+<a class="small back" href="<%= mode === 'edit' ? '/admin/requests/' + r.id : '/admin/requests' %>"><span class="material-icons" aria-hidden="true">chevron_left</span>Back</a>
+<%- include('../partials/errors', { errors }) %>
+<form method="post" action="<%= mode === 'edit' ? '/admin/requests/' + r.id + '/edit' : '/admin/requests' %>" class="form card pad narrow-form" novalidate>
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <% if (mode === 'new') { %>
+    <div class="field"><label for="user_email">Borrower e-mail</label><input id="user_email" name="user_email" type="email" maxlength="160" value="<%= old.user_email || '' %>" placeholder="name@cspc.edu.ph" required><small class="muted">The borrower must already have an account.</small></div>
+    <div class="field"><label for="equipment_id">Equipment</label>
+      <select id="equipment_id" name="equipment_id" required><option value="">Choose...</option>
+        <% equipment.forEach(function (e) { %><option value="<%= e.id %>" <%= String(e.id) === old.equipment_id ? 'selected' : '' %>><%= e.name %> (<%= e.dept_code %>) - <%= e.available_qty %> available</option><% }); %></select></div>
+  <% } else { %>
+    <div class="field"><label>Borrower</label><input value="<%= r.full_name %> (<%= r.email %>)" disabled></div>
+    <div class="field"><label>Equipment</label><input value="<%= r.equipment_name %> - <%= r.reference_no %>" disabled></div>
+  <% } %>
+  <div class="field"><label for="quantity">Quantity</label>
+    <input id="quantity" name="quantity" type="number" min="1" max="50" value="<%= old.quantity || 1 %>" <%= mode === 'edit' && r.status !== 'pending' ? 'disabled' : 'required' %>>
+    <% if (mode === 'edit' && r.status !== 'pending') { %><small class="muted">Quantity is locked once a request is approved.</small><% } %></div>
+  <div class="row2">
+    <div class="field"><label for="borrow_date">Borrow date</label><input id="borrow_date" name="borrow_date" type="date" value="<%= old.borrow_date || '' %>" <%= mode === 'new' ? 'min="' + today + '"' : '' %> required data-borrow></div>
+    <div class="field"><label for="return_date">Return date</label><input id="return_date" name="return_date" type="date" value="<%= old.return_date || '' %>" required data-return></div>
+  </div>
+  <div class="field"><label for="purpose">Purpose</label><textarea id="purpose" name="purpose" rows="3" maxlength="255" required><%= old.purpose || '' %></textarea></div>
+  <% if (mode === 'edit') { %>
+    <div class="field"><label for="note">Note to user <span class="muted">(optional)</span></label><input id="note" name="note" maxlength="255" value="<%= old.note || '' %>"></div>
+  <% } else { %>
+    <label class="check"><input type="checkbox" name="approve" value="1" <%= old.approve ? 'checked' : '' %>> Approve right away (reserves the stock)</label>
+  <% } %>
+  <div class="btn-row"><button class="btn" type="submit"><%= mode === 'edit' ? 'Save changes' : 'Create request' %></button><a class="btn btn-ghost" href="<%= mode === 'edit' ? '/admin/requests/' + r.id : '/admin/requests' %>">Cancel</a></div>
+</form>
+<%- include('../partials/foot', { shell }) %>

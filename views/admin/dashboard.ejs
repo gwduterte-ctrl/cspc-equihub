@@ -1,0 +1,110 @@
+<%- include('../partials/head', { title, shell, section }) %>
+<% const by = stats.byStatus;
+   const borrowed = (by.approved || 0) + (by.return_submitted || 0);
+   const returned = by.returned || 0, pendingN = by.pending || 0, closed = (by.rejected || 0) + (by.cancelled || 0);
+   const total = returned + borrowed + pendingN + closed;
+   const seg = [['Returned', returned, 'seg-green'], ['Borrowed', borrowed, 'seg-blue'], ['Pending', pendingN, 'seg-orange'], ['Declined / Cancelled', closed, 'seg-red']];
+   let acc = 0; %>
+
+<section class="welcome">
+  <div>
+    <p class="welcome-hi"><%= greeting %>, <span class="material-icons wave" aria-hidden="true">waving_hand</span></p>
+    <h2 class="welcome-name"><%= user.full_name %>!</h2>
+    <p class="welcome-sub">Stay updated with every request, return and piece of equipment.</p>
+  </div>
+  <img src="/img/admin-hero.svg" alt="" width="300" height="125">
+</section>
+
+<section class="kpis" aria-label="Summary">
+  <a class="dcard kpi c-blue" href="/admin/equipment"><span class="kpi-ic"><span class="material-icons" aria-hidden="true">inventory_2</span></span><div><small>Total Equipment</small><b><%= stats.equipment %></b><em>In the catalog</em></div></a>
+  <a class="dcard kpi c-green" href="/admin/requests?status=pending"><span class="kpi-ic"><span class="material-icons" aria-hidden="true">pending_actions</span></span><div><small>Pending Requests</small><b><%= pendingN %></b><em>Need review</em></div></a>
+  <a class="dcard kpi c-purple" href="/admin/requests?status=approved"><span class="kpi-ic"><span class="material-icons" aria-hidden="true">assignment_turned_in</span></span><div><small>Borrowed Now</small><b><%= borrowed %></b><em>Currently out</em></div></a>
+  <a class="dcard kpi c-orange" href="/admin/overdue"><span class="kpi-ic"><span class="material-icons" aria-hidden="true">schedule</span></span><div><small>Overdue Returns</small><b><%= stats.overdue %></b><em>Past return date</em></div></a>
+  <a class="dcard kpi c-pink" href="/admin/users"><span class="kpi-ic"><span class="material-icons" aria-hidden="true">group</span></span><div><small>Registered Users</small><b><%= stats.users %></b><em><%= stats.blocked %> blocked</em></div></a>
+</section>
+
+<div class="drow drow-main">
+  <section class="dcard">
+    <div class="dcard-head"><h2>Recent Requests</h2><a href="/admin/requests">View All Requests</a></div>
+    <% if (recent.length === 0) { %><p class="muted small">No requests yet.</p><% } else { %>
+    <div class="table-wrap flat"><table class="rtable">
+      <caption class="sr-only">Recent requests</caption>
+      <thead><tr><th scope="col">Equipment</th><th scope="col">Borrower</th><th scope="col">Qty</th><th scope="col">Status</th><th scope="col">Date</th></tr></thead>
+      <tbody><% recent.forEach(function (r) { %>
+        <tr><td><a href="/admin/requests/<%= r.id %>"><b><%= r.equipment_name %></b></a></td><td><%= r.full_name %></td><td><%= r.quantity %></td>
+          <td><%- include('../partials/pill', { s: r.status }) %></td><td class="nowrap"><%= fmtDate(r.created_at) %></td></tr>
+      <% }); %></tbody>
+    </table></div>
+    <% } %>
+  </section>
+
+  <section class="dcard">
+    <div class="dcard-head"><h2>Notice Board</h2><a href="/admin/requests">View All Notices</a></div>
+    <ul class="notice">
+      <li><span class="notice-ic"><span class="material-icons" aria-hidden="true">photo_camera</span></span><div><a href="/admin/requests?status=return_submitted"><b>Returns Waiting for Review</b></a><p><%= stats.awaitingReview %> return photo<%= stats.awaitingReview === 1 ? '' : 's' %> need to be verified.</p><time><%= fmtDate(todayStr) %></time></div></li>
+      <li><span class="notice-ic"><span class="material-icons" aria-hidden="true">campaign</span></span><div><a href="/admin/overdue"><b>Overdue Returns</b></a><p><%= stats.overdue %> borrower<%= stats.overdue === 1 ? ' is' : 's are' %> past the return date.</p><time><%= fmtDate(todayStr) %></time></div></li>
+      <li><span class="notice-ic"><span class="material-icons" aria-hidden="true">inventory</span></span><div><a href="/admin/equipment"><b>Unavailable Equipment</b></a><p><%= stats.lowStock %> item<%= stats.lowStock === 1 ? ' is' : 's are' %> out of stock or under maintenance.</p><time><%= fmtDate(todayStr) %></time></div></li>
+    </ul>
+  </section>
+</div>
+
+<div class="drow drow-three">
+  <section class="dcard">
+    <div class="dcard-head"><h2>Return Calendar</h2><a href="/admin/requests?status=approved">View Borrowed</a></div>
+    <div id="cal-widget" data-y="<%= calendar.y %>" data-m="<%= calendar.m %>">
+      <p class="cal-label">
+        <button class="cal-nav" type="button" data-cal-prev aria-label="Previous month"><span class="material-icons" aria-hidden="true">chevron_left</span></button>
+        <span id="cal-month-label"><%= calendar.label %></span>
+        <button class="cal-nav" type="button" data-cal-next aria-label="Next month"><span class="material-icons" aria-hidden="true">chevron_right</span></button>
+      </p>
+      <div id="cal-grid" class="cal" role="table" aria-label="Returns due this month">
+        <% ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(function (w) { %><span class="cal-w" role="columnheader"><%= w %></span><% }); %>
+        <% calendar.cells.forEach(function (c) { %>
+          <span role="<%= c.n ? 'button' : 'cell' %>" tabindex="<%= c.n ? '0' : '-1' %>"
+            class="cal-d <%= c.out ? 'cal-out' : '' %> <%= c.today ? 'cal-today' : '' %> <%= c.sun ? 'cal-sun' : '' %> <%= c.n ? (c.late ? 'cal-late' : 'cal-due') : '' %>"
+            <% if (c.n && !c.out) { %>data-cal-day="<%= calendar.y %>-<%= String(calendar.m).padStart(2,'0') %>-<%= String(c.d).padStart(2,'0') %>"<% } %>
+            title="<%= c.n ? c.n + ' return' + (c.n === 1 ? '' : 's') + ' due' : '' %>"><%= c.d %></span>
+        <% }); %>
+      </div>
+    </div>
+    <p class="cal-key"><i class="dot dot-due"></i>Return due <i class="dot dot-late"></i>Past due</p>
+  </section>
+
+  <section class="dcard">
+    <div class="dcard-head"><h2>Quick Access</h2></div>
+    <div class="quick">
+      <% [['Requests','/admin/requests','assignment','c-blue'],['Equipment','/admin/equipment','inventory_2','c-green'],['Categories','/admin/categories','category','c-purple'],
+          ['Departments','/admin/departments','school','c-orange'],['Users','/admin/users','group','c-blue'],['Overdue','/admin/overdue','schedule','c-pink']].forEach(function (q) { %>
+      <a class="quick-i <%= q[3] %>" href="<%= q[1] %>"><span class="kpi-ic"><span class="material-icons" aria-hidden="true"><%= q[2] %></span></span><span><%= q[0] %></span></a>
+      <% }); %>
+    </div>
+  </section>
+
+  <section class="dcard">
+    <div class="dcard-head"><h2>Request Overview</h2><a href="/admin/requests">View Details</a></div>
+    <div class="overview">
+      <svg class="donut" viewBox="0 0 42 42" role="img" aria-label="Share of requests by status">
+        <circle class="ring" cx="21" cy="21" r="15.915" fill="none" stroke-width="5"></circle>
+        <% seg.forEach(function (s) { if (!s[1] || !total) return; const p = s[1] * 100 / total; %>
+        <circle class="<%= s[2] %>" cx="21" cy="21" r="15.915" fill="none" stroke-width="5" stroke-dasharray="<%= p.toFixed(2) %> <%= (100 - p).toFixed(2) %>" stroke-dashoffset="<%= (25 - acc).toFixed(2) %>"></circle>
+        <% acc += p; }); %>
+        <text x="21" y="21.2" text-anchor="middle" class="donut-n"><%= total ? Math.round(returned * 100 / total) : 0 %>%</text>
+        <text x="21" y="26" text-anchor="middle" class="donut-l">Returned</text>
+      </svg>
+      <ul class="legend">
+        <% seg.forEach(function (s) { %><li><i class="dot <%= s[2].replace('seg', 'dot') %>"></i><span><%= s[0] %></span><b><%= total ? Math.round(s[1] * 100 / total) : 0 %>%</b></li><% }); %>
+      </ul>
+    </div>
+  </section>
+</div>
+<%- include('../partials/foot', { shell }) %>
+<div id="cal-day-popup" class="cal-popup" hidden aria-modal="true" role="dialog" aria-labelledby="cal-popup-title">
+  <div class="cal-popup-backdrop"></div>
+  <div class="cal-popup-card">
+    <div class="cal-popup-head">
+      <h3 id="cal-popup-title"></h3>
+      <button class="icon-btn" type="button" id="cal-popup-close" aria-label="Close"><span class="material-icons" aria-hidden="true">close</span></button>
+    </div>
+    <div id="cal-popup-body" class="cal-popup-body"></div>
+  </div>
+</div>

@@ -1,0 +1,17 @@
+<%- include('../partials/head', { title, shell, section }) %>
+<% if (!q) { %><div class="empty-state dcard"><span class="material-icons big" aria-hidden="true">search</span><p>Type something in the search box above to find requests, equipment or users.</p></div>
+<% } else { %>
+<p class="muted small">Results for &ldquo;<%= q %>&rdquo;</p>
+<div class="drow drow-three">
+  <section class="dcard"><div class="dcard-head"><h2>Requests</h2><a href="/admin/requests?q=<%= encodeURIComponent(q) %>">See all</a></div>
+    <% if (!reqs.length) { %><p class="muted small">No matching requests.</p><% } else { %><ul class="list compact"><% reqs.forEach(function (r) { %>
+      <li><span class="material-icons" aria-hidden="true">assignment</span><div><a href="/admin/requests/<%= r.id %>"><%= r.reference_no %> &middot; <%= r.equipment_name %></a><p class="muted small"><%= r.full_name %> &middot; <%= statusLabel[r.status] %></p></div></li><% }); %></ul><% } %></section>
+  <section class="dcard"><div class="dcard-head"><h2>Equipment</h2><a href="/admin/equipment?q=<%= encodeURIComponent(q) %>">See all</a></div>
+    <% if (!eq.length) { %><p class="muted small">No matching equipment.</p><% } else { %><ul class="list compact"><% eq.forEach(function (e) { %>
+      <li><span class="material-icons" aria-hidden="true">inventory_2</span><div><a href="/admin/equipment/<%= e.id %>/edit"><%= e.name %></a><p class="muted small"><%= e.dept_code %> &middot; <%= e.category_name %> &middot; <%= e.available_qty %>/<%= e.total_qty %></p></div></li><% }); %></ul><% } %></section>
+  <section class="dcard"><div class="dcard-head"><h2>Users</h2><a href="/admin/users?q=<%= encodeURIComponent(q) %>">See all</a></div>
+    <% if (!us.length) { %><p class="muted small">No matching users.</p><% } else { %><ul class="list compact"><% us.forEach(function (u) { %>
+      <li><span class="material-icons" aria-hidden="true">person</span><div><a href="/admin/users/<%= u.id %>"><%= u.full_name %></a><p class="muted small"><%= u.email %><%= u.is_blocked ? ' - blocked' : '' %></p></div></li><% }); %></ul><% } %></section>
+</div>
+<% } %>
+<%- include('../partials/foot', { shell }) %>

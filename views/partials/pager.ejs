@@ -1,0 +1,7 @@
+<% if (results.pages > 1) { const page = f.page || 1; %>
+<nav class="pager" aria-label="Pagination">
+  <% if (page > 1) { %><a class="icon-btn" href="<%= action + qs(f, page - 1) %>#catalog" aria-label="Previous page"><span class="material-icons">chevron_left</span></a><% } %>
+  <span class="small muted">Page <%= page %> of <%= results.pages %></span>
+  <% if (page < results.pages) { %><a class="icon-btn" href="<%= action + qs(f, page + 1) %>#catalog" aria-label="Next page"><span class="material-icons">chevron_right</span></a><% } %>
+</nav>
+<% } %>

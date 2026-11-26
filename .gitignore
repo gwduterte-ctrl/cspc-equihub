@@ -1,0 +1,21 @@
+node_modules/
+.env
+.env.*
+!.env.example
+*.log
+npm-debug.log*
+.DS_Store
+coverage/
+dist/
+
+# raw phpMyAdmin exports contain real users, sessions and logs - never commit them
+*.sql
+!database/schema.sql
+!database/migrate-002.sql
+!database/seed-sample.sql
+!database/demo-data.sql
+!database/create-app-user.sql
+
+# return-proof photos are personal data - keep the folder, not the content
+uploads-private/proofs/*
+!**/.gitkeep

@@ -1,0 +1,48 @@
+<% const initials = user.full_name.split(' ').map(function (w) { return w.charAt(0); }).slice(0, 2).join('').toUpperCase(); %>
+<aside class="acc-side" id="acc-side" data-acc-side aria-label="My account">
+  <div class="acc-head">
+    <span class="acc-avatar" aria-hidden="true"><%= initials %></span>
+    <span class="acc-who"><b><%= user.full_name %></b><small><%= user.user_type %></small></span>
+    <button class="acc-collapse" type="button" data-acc-collapse aria-label="Collapse menu" aria-expanded="true"><span class="material-icons" aria-hidden="true">chevron_left</span></button>
+  </div>
+
+  <p class="acc-label">Menu</p>
+  <nav class="acc-nav" aria-label="Account menu">
+    <%# Notifications open inside the menu itself - no page of their own %>
+    <details class="side-notif" id="notifications" data-notifs>
+      <summary>
+        <span class="material-icons ic" aria-hidden="true">notifications_none</span><span class="acc-t">Notifications</span>
+        <% if (unread) { %><i class="badge inline-badge" data-unread><%= unread %></i><% } %>
+        <span class="material-icons chev acc-t" aria-hidden="true">expand_more</span>
+      </summary>
+      <div class="notif-panel">
+        <% if (sideNotifs.length === 0) { %><p class="muted small notif-empty">You're all caught up.</p><% } else { %>
+          <%- include('notif-list', { items: sideNotifs, base: '/account', compact: true }) %>
+          <div class="notif-tools">
+            <% if (unread) { %><form method="post" action="/account/notifications/read" class="notif-read-form"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-ghost btn-sm" type="submit">Mark all as read</button></form><% } %>
+            <form method="post" action="/account/notifications/clear" data-confirm="Every notification will be permanently removed." data-confirm-title="Clear all notifications?" data-confirm-yes="Yes, clear all" data-confirm-no="No, keep them"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="back" value="<%= currentPath %>"><button class="btn btn-ghost btn-sm danger-text" type="submit">Clear all</button></form>
+          </div>
+        <% } %>
+      </div>
+    </details>
+    <% [['profile','Profile','/account/profile','person_outline'],['requests','Requests history','/account/requests','history'],['logs','Logs','/account/logs','receipt_long']].forEach(function (l) { %>
+      <a href="<%= l[2] %>" class="acc-link <%= locals.section === l[0] ? 'is-active' : '' %>" title="<%= l[1] %>"><span class="material-icons ic" aria-hidden="true"><%= l[3] %></span><span class="acc-t"><%= l[1] %></span></a>
+    <% }); %>
+  </nav>
+
+  <p class="acc-label">Account</p>
+  <nav class="acc-nav" aria-label="Session">
+    <form method="post" action="/logout"><input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <button class="acc-link acc-out" type="submit" title="Log out"><span class="material-icons ic" aria-hidden="true">logout</span><span class="acc-t">Log out</span></button></form>
+  </nav>
+
+  <div class="acc-card">
+    <span class="acc-card-ic"><span class="material-icons" aria-hidden="true">inventory_2</span></span>
+    <div class="acc-card-body">
+      <p class="acc-card-k">Borrowing status :</p>
+      <b class="acc-card-v"><%= user.is_blocked ? 'Blocked' : 'Allowed' %></b>
+      <p class="acc-card-t">Borrowed now: <%= sideSummary.out %> &middot; Overdue: <%= sideSummary.late %></p>
+      <a class="acc-card-btn" href="/equipments">Borrow equipment</a>
+    </div>
+  </div>
+</aside>

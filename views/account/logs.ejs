@@ -1,0 +1,12 @@
+<%- include('../partials/head', { title, shell, section }) %>
+<h1>Activity logs</h1>
+<p class="muted small">Your recent actions on EquiHub.</p>
+<% if (items.length === 0) { %><div class="empty-state"><span class="material-icons big" aria-hidden="true">receipt_long</span><p>No activity yet.</p></div>
+<% } else { %>
+<div class="table-wrap"><table>
+  <caption class="sr-only">Activity log</caption>
+  <thead><tr><th scope="col">When</th><th scope="col">Action</th><th scope="col">Details</th></tr></thead>
+  <tbody><% items.forEach(function (l) { %><tr><td><%= fmtDateTime(l.created_at) %></td><td><%= l.action.replace(/_/g, ' ') %></td><td><%= l.details || '-' %></td></tr><% }); %></tbody>
+</table></div>
+<% } %>
+<%- include('../partials/foot', { shell }) %>

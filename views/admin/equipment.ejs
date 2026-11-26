@@ -1,0 +1,32 @@
+<%- include('../partials/head', { title, shell, section }) %>
+<div class="toolbar">
+  <form method="get" action="/admin/equipment" class="toolbar-form" role="search">
+    <label class="sr-only" for="q">Search</label><input id="q" type="search" name="q" value="<%= q %>" maxlength="80" placeholder="Search equipment">
+    <label class="sr-only" for="category">Category</label>
+    <select id="category" name="category"><option value="">All categories</option>
+      <% categories.forEach(function (c) { %><option value="<%= c.id %>" <%= categoryId === c.id ? 'selected' : '' %>><%= c.name %> (<%= c.dept_code %>)</option><% }); %></select>
+    <button class="btn btn-sm" type="submit">Filter</button>
+  </form>
+  <a class="btn btn-sm" href="/admin/equipment/new"><span class="material-icons" aria-hidden="true">add</span>Add equipment</a>
+</div>
+<% if (results.rows.length === 0) { %><div class="empty-state"><span class="material-icons big" aria-hidden="true">inventory_2</span><p>No equipment found.</p></div>
+<% } else { %>
+<div class="table-wrap"><table>
+  <caption class="sr-only">Equipment</caption>
+  <thead><tr><th scope="col">Item</th><th scope="col">Department / Category</th><th scope="col">Status</th><th scope="col" class="num">Available</th><th scope="col" class="num">Total</th><th scope="col"><span class="sr-only">Actions</span></th></tr></thead>
+  <tbody><% results.rows.forEach(function (e) { %>
+    <tr>
+      <td><div class="cell-item"><img src="<%= e.image ? '/uploads/equipment/' + e.image : '/img/placeholder-equipment.svg' %>" alt="" width="40" height="40" data-fallback="/img/placeholder-equipment.svg"><div><b><%= e.name %></b><% if (e.featured) { %> <span class="material-icons inline-ic" title="Featured on homepage" aria-label="Featured on homepage">star</span><% } %><p class="muted small clamp"><%= e.description %></p></div></div></td>
+      <td><%= e.dept_code %> &middot; <%= e.category_name %></td>
+      <td><%- include('../partials/pill', { s: e.status }) %></td>
+      <td class="num"><%= e.available_qty %></td><td class="num"><%= e.total_qty %></td>
+      <td class="actions">
+        <a class="icon-btn" href="/admin/equipment/<%= e.id %>/edit" aria-label="Edit <%= e.name %>"><span class="material-icons">edit</span></a>
+        <form method="post" action="/admin/equipment/<%= e.id %>/delete" class="inline" data-confirm="This will permanently remove <%= e.name %> and all of its borrow requests." data-confirm-title="Delete equipment?" data-confirm-yes="Yes, delete!" data-confirm-no="No, keep it."><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="icon-btn danger" type="submit" aria-label="Delete <%= e.name %>"><span class="material-icons">delete</span></button></form>
+      </td>
+    </tr>
+  <% }); %></tbody>
+</table></div>
+<%- include('../partials/pager', { results, f, action, qs }) %>
+<% } %>
+<%- include('../partials/foot', { shell }) %>

@@ -1,0 +1,19 @@
+<%- include('../partials/head', { title, shell, authAlt: { text: '', label: 'Back to website', href: '/' } }) %>
+<section class="auth-stack">
+  <div class="auth-card">
+    <img class="auth-logo" src="/img/logo-md.png" alt="CSPC EquiHub logo" width="84" height="84">
+    <h1>Admin sign-in</h1>
+    <p class="auth-sub">Authorized personnel only.</p>
+    <%- include('../partials/errors', { errors }) %>
+    <form method="post" action="/admin/login" class="form" novalidate>
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="field"><label for="email">E-mail</label>
+        <div class="ifield"><span class="material-icons" aria-hidden="true">mail_outline</span><input id="email" name="email" type="email" maxlength="160" value="<%= old.email || '' %>" placeholder="Enter your e-mail address" autocomplete="username" required></div></div>
+      <div class="field"><label for="password">Password</label>
+        <div class="ifield"><span class="material-icons" aria-hidden="true">lock_outline</span><input id="password" name="password" type="password" maxlength="200" placeholder="Enter your password" autocomplete="current-password" required>
+          <button class="eye" type="button" data-toggle-pass aria-label="Show password"><span class="material-icons" aria-hidden="true">visibility</span></button></div></div>
+      <button class="btn btn-block" type="submit">Sign in</button>
+    </form>
+  </div>
+</section>
+<%- include('../partials/foot', { shell }) %>

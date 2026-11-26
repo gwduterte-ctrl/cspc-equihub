@@ -1,0 +1,2 @@
+<%# Department logo: uploaded in Admin > Departments; falls back to public/img/departments/<code>.png, then the initials %>
+<span class="dept-logo" title="<%= name %>"><span><%= code %></span><img src="<%= locals.logo ? '/uploads/departments/' + logo : '/img/departments/' + code.toLowerCase() + '.png' %>" alt="" data-hide></span>

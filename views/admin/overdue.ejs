@@ -1,0 +1,25 @@
+<%- include('../partials/head', { title, shell, section }) %>
+<div class="toolbar">
+  <p class="muted small"><span class="material-icons inline-ic" aria-hidden="true">autorenew</span>Reminders go out automatically every day: a notification in the borrower's side menu plus an e-mail.</p>
+  <form method="post" action="/admin/overdue/run" class="inline"><input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <button class="btn btn-sm" type="submit"><span class="material-icons" aria-hidden="true">notifications_active</span>Send reminders now</button></form>
+</div>
+<% if (items.length === 0) { %><div class="empty-state card"><span class="material-icons big" aria-hidden="true">task_alt</span><p>Nothing is overdue. Nice.</p></div>
+<% } else { %>
+<div class="table-wrap"><table>
+  <caption class="sr-only">Overdue returns</caption>
+  <thead><tr><th scope="col">Reference</th><th scope="col">Borrower</th><th scope="col">Equipment</th><th scope="col">Was due</th><th scope="col">Late</th><th scope="col">Reminders</th><th scope="col"><span class="sr-only">Actions</span></th></tr></thead>
+  <tbody><% items.forEach(function (r) { %>
+    <tr><td><a href="/admin/requests/<%= r.id %>"><%= r.reference_no %></a></td>
+      <td><a href="/admin/users/<%= r.user_id %>"><%= r.full_name %></a><p class="muted small"><%= r.email %></p></td>
+      <td><%= r.equipment_name %> <span class="muted">x<%= r.quantity %></span></td>
+      <td><%= fmtDate(r.return_date) %></td>
+      <td><span class="pill pill--overdue"><%= r.days_overdue %> day<%= r.days_overdue === 1 ? '' : 's' %></span></td>
+      <td class="small"><%= r.reminder_count %><% if (r.last_reminder_at) { %><p class="muted">last <%= fmtDate(r.last_reminder_at) %></p><% } %></td>
+      <td class="actions">
+        <form method="post" action="/admin/requests/<%= r.id %>/remind" class="inline"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="back" value="overdue">
+          <button class="btn btn-outline btn-sm" type="submit">Remind</button></form></td></tr>
+  <% }); %></tbody>
+</table></div>
+<% } %>
+<%- include('../partials/foot', { shell }) %>

@@ -1,0 +1,5 @@
+<form method="post" action="/consent" data-consent class="consent-form">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="back" value="<%= currentPath %>">
+  <label class="check"><input type="checkbox" name="agree" value="yes" required> <span>I have read the <a href="/privacy">Privacy Notice</a> and agree to the collection of my data and the use of essential cookies (RA 10173).</span></label>
+  <div class="dlg-actions"><a class="dlg-btn dlg-no" href="/privacy">Read the notice</a><button class="dlg-btn dlg-ok" type="submit">Accept and continue</button></div>
+</form>

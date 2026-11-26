@@ -1,0 +1,62 @@
+<%- include('../partials/head', { title, shell }) %>
+<% const catCount = groups.reduce(function (n, g) { return n + g.cats.length; }, 0); %>
+
+<section class="hero2 hero2--sm">
+  <div class="hero2-photo" aria-hidden="true">
+    <ul class="hero-stats">
+      <li><b><%= total %></b><span>Items</span></li>
+      <li><b><%= groups.length %></b><span>Departments</span></li>
+      <li><b><%= catCount %></b><span>Categories</span></li>
+    </ul>
+  </div>
+  <div class="hero2-panel" aria-hidden="true"></div>
+  <div class="container hero2-inner">
+    <p class="eyebrow">Equipment catalog</p>
+    <h1>Everything you can borrow <span>by department</span></h1>
+    <p class="lead">Search or filter the catalog, open any item to see its photo, description and availability, then send a borrow request with one short form.</p>
+    <ul class="hero-chips hero-steps">
+      <li><span class="material-icons" aria-hidden="true">search</span>Search and filter</li>
+      <li><span class="material-icons" aria-hidden="true">visibility</span>View photo and details</li>
+      <li><span class="material-icons" aria-hidden="true">edit_calendar</span>Borrow with one form</li>
+    </ul>
+  </div>
+</section>
+
+<div class="container search-wrap" id="catalog"><%- include('../partials/filters', { f, departments, categories, action }) %></div>
+
+<% if (groups.length > 1) { %>
+<nav class="container jump" aria-label="Jump to department">
+  <span class="jump-label"><span class="material-icons" aria-hidden="true">near_me</span>Jump to</span>
+  <% groups.forEach(function (g) { %><a class="jump-chip" href="#dept-<%= g.id %>"><%= g.code %> <i><%= g.count %></i></a><% }); %>
+</nav>
+<% } %>
+
+<section class="container section eq-list">
+  <% if (groups.length === 0) { %>
+    <div class="empty-state card"><span class="material-icons big" aria-hidden="true">search_off</span><p>No equipment matches your filters.</p><a class="btn btn-sm" href="/equipments">Reset filters</a></div>
+  <% } else if (total > 120) { %>
+    <p class="muted small">Showing the first 120 of <%= total %> items - narrow your search to see the rest.</p>
+  <% } %>
+  <% groups.forEach(function (g) { %>
+  <section class="dept-sec" id="dept-<%= g.id %>" aria-labelledby="dh-<%= g.id %>">
+    <header class="dept-hd">
+      <%- include('../partials/dept-logo', { code: g.code, name: g.name, logo: g.logo }) %>
+      <div class="dept-hd-text"><h2 id="dh-<%= g.id %>"><%= g.name %></h2><p><%= g.cats.length %> categor<%= g.cats.length === 1 ? 'y' : 'ies' %> &middot; <%= g.count %> item<%= g.count === 1 ? '' : 's' %></p></div>
+      <% if (!f.departmentId) { %><a class="btn btn-light btn-sm" href="/equipments?department=<%= g.id %>">Only <%= g.code %></a><% } %>
+    </header>
+    <div class="dept-bd">
+      <% g.cats.forEach(function (c) { %>
+      <div class="cat-sec">
+        <div class="cat-row">
+          <img class="cat-thumb" src="<%= c.image ? '/uploads/categories/' + c.image : '/img/placeholder-category.svg' %>" alt="" width="40" height="40" loading="lazy" data-fallback="/img/placeholder-category.svg">
+          <h3><%= c.name %></h3><span class="count-chip"><%= c.items.length %></span><span class="cat-line" aria-hidden="true"></span>
+        </div>
+        <div class="grid"><% c.items.forEach(function (e) { %><%- include('../partials/equip-card', { e }) %><% }); %></div>
+      </div>
+      <% }); %>
+    </div>
+  </section>
+  <% }); %>
+</section>
+<%- include('../partials/popup') %>
+<%- include('../partials/foot', { shell }) %>

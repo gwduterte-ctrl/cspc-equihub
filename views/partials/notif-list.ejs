@@ -1,0 +1,20 @@
+<%# params: items, base ('/account' or '/admin'), compact (side menu) %>
+<ul class="nf-list <%= locals.compact ? 'is-compact' : '' %>">
+  <% items.forEach(function (n) { const m = notifMeta(n.message); const parts = n.message.split('\nNote: '); const body = parts[0]; const adminNote = parts[1] || null; %>
+  <li class="nf <%= n.is_read ? '' : 'is-new' %>">
+    <form method="post" action="<%= base %>/notifications/<%= n.id %>/delete" class="nf-del">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="back" value="<%= currentPath %>">
+      <button class="nf-x" type="submit" aria-label="Delete this notification" title="Delete"><span class="material-icons" aria-hidden="true">close</span></button>
+    </form>
+    <div class="nf-body">
+      <div class="nf-top"><span class="nf-tag nf-<%= m.cls %>"><%= m.tag %></span><time class="nf-time"><span class="material-icons" aria-hidden="true">schedule</span><%= fmtDateTime(n.created_at) %></time></div>
+      <b class="nf-title"><%= m.title %></b>
+      <p class="nf-desc"><%= body %></p>
+      <% if (adminNote) { %>
+      <p class="nf-admin-note"><span class="material-icons" aria-hidden="true">rate_review</span><%= adminNote %></p>
+      <% } %>
+      <% if (n.link) { %><a class="nf-view" href="<%= n.link %>">View details</a><% } %>
+    </div>
+  </li>
+  <% }); %>
+</ul>

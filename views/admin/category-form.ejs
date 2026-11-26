@@ -1,0 +1,35 @@
+<%- include('../partials/head', { title, shell, section }) %>
+<%- include('../partials/errors', { errors }) %>
+<div class="cat-form-wrap card pad">
+  <form method="post" action="<%= c.id ? '/admin/categories/' + c.id : '/admin/categories' %>" enctype="multipart/form-data" novalidate>
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <div class="cat-form-layout">
+
+      <div class="cat-form-fields form">
+        <div class="field"><label for="name">Category name</label><input id="name" name="name" maxlength="80" value="<%= c.name %>" required></div>
+        <div class="field"><label for="department_id">Department</label><select id="department_id" name="department_id" required><option value="">Choose...</option>
+          <% departments.forEach(function (d) { %><option value="<%= d.id %>" <%= Number(c.department_id) === d.id ? 'selected' : '' %>><%= d.code %> - <%= d.name %></option><% }); %>
+        </select></div>
+        <div class="field"><label for="image">Image <span class="muted">(JPG, PNG, WebP, max 3 MB)</span></label>
+          <input id="cat-image-input" name="image" type="file" accept="image/jpeg,image/png,image/webp"></div>
+        <div class="btn-row"><button class="btn btn-sm" type="submit">Save</button><a class="btn btn-ghost btn-sm" href="/admin/categories">Cancel</a></div>
+      </div>
+
+      <div class="cat-form-preview">
+        <p class="cat-preview-label">Image preview</p>
+        <div class="cat-preview-box">
+          <img id="cat-img-preview"
+            src="<%= c.image ? '/uploads/categories/' + c.image : '' %>"
+            alt="Category image preview"
+            <% if (!c.image) { %>hidden<% } %>>
+          <span id="cat-img-placeholder" class="cat-preview-empty" <% if (c.image) { %>hidden<% } %>>
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <span>No image selected</span>
+          </span>
+        </div>
+      </div>
+
+    </div>
+  </form>
+</div>
+<%- include('../partials/foot', { shell }) %>

@@ -1,0 +1,25 @@
+<% const shownCats = categories.filter(function (c) { return !f.departmentId || c.department_id === f.departmentId; }); %>
+<form class="search-card" method="get" action="<%= action %>#catalog" role="search">
+  <button class="sr-only" type="submit" name="department" value="<%= f.departmentId || '' %>" tabindex="-1" aria-hidden="true">Search</button>
+  <div class="tabs" role="group" aria-label="Department">
+    <button type="submit" name="department" value="" class="tab <%= !f.departmentId ? 'is-active' : '' %>"><span class="material-icons" aria-hidden="true">apps</span>All</button>
+    <% departments.forEach(function (d) { %>
+    <button type="submit" name="department" value="<%= d.id %>" title="<%= d.name %>" class="tab <%= f.departmentId === d.id ? 'is-active' : '' %>"><span class="material-icons" aria-hidden="true">school</span><%= d.code %></button>
+    <% }); %>
+  </div>
+  <div class="sf">
+    <div class="sfield sfield-grow"><label for="f-q">Search</label>
+      <div class="sbox"><span class="material-icons" aria-hidden="true">search</span><input id="f-q" type="search" name="q" value="<%= f.q %>" maxlength="80" placeholder="Projector, speaker, tripod..."></div></div>
+    <div class="sfield"><label for="f-cat">Category</label>
+      <select id="f-cat" name="category"><option value="">All categories</option>
+        <% shownCats.forEach(function (c) { %><option value="<%= c.id %>" <%= f.categoryId === c.id ? 'selected' : '' %>><%= c.name %><%= f.departmentId ? '' : ' (' + c.dept_code + ')' %></option><% }); %></select></div>
+    <div class="sfield"><label for="f-sort">Sort by</label>
+      <select id="f-sort" name="sort">
+        <option value="name" <%= f.sort === 'name' ? 'selected' : '' %>>Name A-Z</option>
+        <option value="newest" <%= f.sort === 'newest' ? 'selected' : '' %>>Newest</option>
+        <option value="qty" <%= f.sort === 'qty' ? 'selected' : '' %>>Most available</option></select></div>
+    <label class="check sf-check"><input type="checkbox" name="available" value="1" <%= f.availableOnly ? 'checked' : '' %>> Available only</label>
+    <button class="btn" type="submit" name="department" value="<%= f.departmentId || '' %>"><span class="material-icons" aria-hidden="true">search</span>Search</button>
+    <a class="btn btn-ghost btn-sm" href="<%= action %>">Reset</a>
+  </div>
+</form>

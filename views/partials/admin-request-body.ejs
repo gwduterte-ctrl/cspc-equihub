@@ -1,0 +1,67 @@
+<%# Request pop-up (admin): big return photo on the left, facts + note + decision on the right. Both sides share one card, so they are always the same height. %>
+<% const decide = r.status === 'pending', review = r.status === 'return_submitted'; %>
+<article class="detail-card req-pop" aria-labelledby="rp-title-<%= r.id %>">
+  <div class="detail-media req-media">
+    <div class="media-top">
+      <span class="media-cat"><span class="material-icons" aria-hidden="true">tag</span><%= r.reference_no %></span>
+      <%- include('pill', { s: r.status }) %>
+      <% if (r.overdue) { %><span class="pill pill--overdue"><%= r.days_overdue %> day<%= r.days_overdue === 1 ? '' : 's' %> late</span><% } %>
+    </div>
+    <% if (r.return_proof) { %>
+      <img class="req-proof" src="/admin/files/proof/<%= r.id %>" alt="Return photo uploaded by <%= r.full_name %>">
+    <% } else { %>
+      <div class="req-proof-empty"><span class="material-icons" aria-hidden="true">photo_camera</span><b>No return photo yet</b><p>The borrower uploads it after returning the equipment.</p></div>
+    <% } %>
+    <p class="req-cap"><span class="material-icons" aria-hidden="true">image</span>Return proof</p>
+  </div>
+
+  <div class="detail-info req-info">
+    <p class="eyebrow dark">Borrow request</p>
+    <h1 id="rp-title-<%= r.id %>"><%= r.equipment_name %> <span class="muted">x<%= r.quantity %></span></h1>
+    <dl class="req-facts">
+      <div><dt>Borrower</dt><dd><%= r.full_name %> <span class="muted">(<%= r.user_type %>)</span></dd></div>
+      <div><dt>E-mail</dt><dd><%= r.email %></dd></div>
+      <div><dt>Equipment</dt><dd><%= r.dept_code %> &middot; <%= r.category_name %></dd></div>
+      <div><dt>Borrow &rarr; Return</dt><dd><%= fmtDate(r.borrow_date) %> &rarr; <%= fmtDate(r.return_date) %></dd></div>
+      <div><dt>Purpose</dt><dd><%= r.purpose %></dd></div>
+      <div><dt>Filed</dt><dd><%= fmtDateTime(r.created_at) %></dd></div>
+      <% if (r.admin_note) { %><div><dt>Note</dt><dd><%= r.admin_note %></dd></div><% } %>
+      <% if (r.returned_at) { %><div><dt>Returned</dt><dd><%= fmtDateTime(r.returned_at) %></dd></div><% } %>
+    </dl>
+
+    <% if (r.overdue) { %>
+    <form method="post" action="/admin/requests/<%= r.id %>/remind" class="req-remind">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="back" value="list">
+      <span class="muted small">Reminders sent: <%= r.reminder_count %><% if (r.last_reminder_at) { %> &middot; last <%= fmtDate(r.last_reminder_at) %><% } %></span>
+      <button class="btn btn-outline btn-sm" type="submit"><span class="material-icons" aria-hidden="true">notifications_active</span>Send reminder</button>
+    </form>
+    <% } %>
+
+    <% if (decide || review) { %>
+    <form method="post" class="req-form" novalidate>
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="back" value="list">
+      <div class="field"><label for="note-<%= r.id %>">Note to user <span class="muted">(optional)</span></label><input id="note-<%= r.id %>" name="note" maxlength="255" placeholder="Add a short note"></div>
+      <div class="req-actions">
+        <% if (decide) { %>
+          <button class="btn" type="submit" formaction="/admin/requests/<%= r.id %>/approve" data-confirm="Stock will be reserved and <%= r.full_name %> will be notified." data-confirm-title="Approve this request?" data-confirm-yes="Yes, approve" data-confirm-no="Not yet" data-confirm-tone="primary"><span class="material-icons" aria-hidden="true">check</span>Approve</button>
+          <button class="btn btn-outline danger-text" type="submit" formaction="/admin/requests/<%= r.id %>/reject" data-confirm="<%= r.full_name %> will be told this request was declined." data-confirm-title="Decline this request?" data-confirm-yes="Yes, decline" data-confirm-no="No, go back"><span class="material-icons" aria-hidden="true">close</span>Decline</button>
+        <% } else { %>
+          <button class="btn" type="submit" formaction="/admin/requests/<%= r.id %>/confirm-return" data-confirm="The stock goes back on the shelf and <%= r.full_name %> can borrow again." data-confirm-title="Confirm this return?" data-confirm-yes="Yes, confirm" data-confirm-no="Not yet" data-confirm-tone="primary"><span class="material-icons" aria-hidden="true">verified</span>Confirm returned</button>
+          <button class="btn btn-outline danger-text" type="submit" formaction="/admin/requests/<%= r.id %>/reject-proof" data-confirm="<%= r.full_name %> will be asked to upload a clearer photo." data-confirm-title="Reject this return photo?" data-confirm-yes="Yes, reject it" data-confirm-no="No, keep it"><span class="material-icons" aria-hidden="true">replay</span>Reject proof</button>
+        <% } %>
+      </div>
+    </form>
+    <% } else { %>
+      <p class="req-done"><span class="material-icons" aria-hidden="true">task_alt</span>This request is <b><%= statusLabel[r.status].toLowerCase() %></b>. No action is needed.</p>
+    <% } %>
+
+    <div class="req-links">
+      <% if (r.status === 'pending' || r.status === 'approved') { %><a href="/admin/requests/<%= r.id %>/edit"><span class="material-icons" aria-hidden="true">edit</span>Edit</a><% } %>
+      <a href="/admin/users?q=<%= encodeURIComponent(r.email) %>"><span class="material-icons" aria-hidden="true">manage_accounts</span><%= r.is_blocked ? 'Blocked user' : 'Block user' %></a>
+      <% if (['returned','rejected','cancelled'].indexOf(r.status) !== -1) { %>
+      <form method="post" action="/admin/requests/<%= r.id %>/delete" class="inline" data-confirm="Request <%= r.reference_no %> will be permanently removed." data-confirm-title="Delete request?" data-confirm-yes="Yes, delete!" data-confirm-no="No, keep it.">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="req-link-btn danger-text" type="submit"><span class="material-icons" aria-hidden="true">delete</span>Delete</button></form>
+      <% } %>
+    </div>
+  </div>
+</article>

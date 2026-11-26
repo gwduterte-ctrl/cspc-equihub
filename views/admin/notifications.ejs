@@ -1,0 +1,11 @@
+<%- include('../partials/head', { title, shell, section }) %>
+<section class="dcard nf-card">
+  <div class="dcard-head">
+    <h2>Notifications</h2>
+    <% if (items.length) { %><form method="post" action="/admin/notifications/clear" class="inline" data-confirm="Every notification in this list will be permanently removed." data-confirm-title="Clear all notifications?" data-confirm-yes="Yes, clear all" data-confirm-no="No, keep them">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-outline btn-sm" type="submit"><span class="material-icons" aria-hidden="true">delete_sweep</span>Clear all</button></form><% } %>
+  </div>
+  <% if (items.length === 0) { %><div class="empty-state"><span class="material-icons big" aria-hidden="true">notifications_none</span><p>You're all caught up.</p></div>
+  <% } else { %><%- include('../partials/notif-list', { items, base: '/admin', compact: false }) %><% } %>
+</section>
+<%- include('../partials/foot', { shell }) %>

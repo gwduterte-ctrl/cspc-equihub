@@ -1,0 +1,24 @@
+<%- include('../partials/head', { title, shell, section }) %>
+<a class="small back" href="/admin/users<%= old.role === 'admin' ? '?role=admin' : '' %>"><span class="material-icons" aria-hidden="true">chevron_left</span>Back</a>
+<%- include('../partials/errors', { errors }) %>
+<form method="post" action="<%= u ? '/admin/users/' + u.id + '/edit' : '/admin/users' %>" class="form card pad narrow-form" novalidate autocomplete="off">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <div class="field"><label for="full_name">Full name</label><input id="full_name" name="full_name" maxlength="120" value="<%= old.full_name || '' %>" required></div>
+  <div class="field"><label for="email">E-mail</label><input id="email" name="email" type="email" maxlength="160" value="<%= old.email || '' %>" <%= u ? 'disabled' : 'required' %>></div>
+  <div class="row2">
+    <div class="field"><label for="role">Role</label>
+      <select id="role" name="role" <%= self ? 'disabled' : '' %>><option value="user" <%= old.role !== 'admin' ? 'selected' : '' %>>User (borrower)</option><option value="admin" <%= old.role === 'admin' ? 'selected' : '' %>>Admin</option></select>
+      <% if (self) { %><small class="muted">You cannot change your own role.</small><% } %></div>
+    <div class="field"><label for="user_type">Type</label>
+      <select id="user_type" name="user_type"><% ['student','faculty','employee'].forEach(function (t) { %><option value="<%= t %>" <%= old.user_type === t ? 'selected' : '' %>><%= t.charAt(0).toUpperCase() + t.slice(1) %></option><% }); %></select></div>
+  </div>
+  <div class="row2">
+    <div class="field"><label for="id_number">ID number <span class="muted">(optional)</span></label><input id="id_number" name="id_number" maxlength="30" value="<%= old.id_number || '' %>"></div>
+    <div class="field"><label for="department_id">Department <span class="muted">(optional)</span></label>
+      <select id="department_id" name="department_id"><option value="">None</option><% departments.forEach(function (d) { %><option value="<%= d.id %>" <%= String(d.id) === old.department_id ? 'selected' : '' %>><%= d.code %> - <%= d.name %></option><% }); %></select></div>
+  </div>
+  <div class="field"><label for="password"><%= u ? 'New password' : 'Password' %> <% if (u) { %><span class="muted">(leave blank to keep the current one)</span><% } %></label>
+    <input id="password" name="password" type="password" minlength="10" maxlength="128" autocomplete="new-password" <%= u ? '' : 'required' %>><small class="muted">At least 10 characters.</small></div>
+  <div class="btn-row"><button class="btn" type="submit"><%= u ? 'Save changes' : 'Create account' %></button><a class="btn btn-ghost" href="/admin/users<%= old.role === 'admin' ? '?role=admin' : '' %>">Cancel</a></div>
+</form>
+<%- include('../partials/foot', { shell }) %>

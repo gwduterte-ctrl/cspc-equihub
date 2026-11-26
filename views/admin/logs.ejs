@@ -1,0 +1,11 @@
+<%- include('../partials/head', { title, shell, section }) %>
+<div class="toolbar"><form method="get" action="/admin/logs" class="toolbar-form" role="search">
+  <label class="sr-only" for="q">Search</label><input id="q" type="search" name="q" value="<%= q %>" maxlength="80" placeholder="Search logs"><button class="btn" type="submit">Search</button></form>
+  <form method="post" action="/admin/logs/clear" class="inline" data-confirm="Every log entry older than 90 days will be permanently removed." data-confirm-title="Clear old logs?" data-confirm-yes="Yes, clear them" data-confirm-no="No, keep them."><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-outline" type="submit"><span class="material-icons" aria-hidden="true">delete_sweep</span>Clear logs older than 90 days</button></form></div>
+<div class="table-wrap"><table>
+  <caption class="sr-only">Activity logs</caption>
+  <thead><tr><th scope="col">When</th><th scope="col">User</th><th scope="col">Action</th><th scope="col">Details</th><th scope="col">IP</th></tr></thead>
+  <tbody><% items.forEach(function (l) { %><tr><td class="small"><%= fmtDateTime(l.created_at) %></td><td><%= l.full_name || 'Guest' %> <span class="muted small">(<%= l.actor_role %>)</span></td><td><%= l.action.replace(/_/g, ' ') %></td><td class="small"><%= l.details || '-' %></td><td class="small muted"><%= l.ip %></td></tr><% }); %></tbody>
+</table></div>
+<% if (items.length === 0) { %><div class="empty-state"><p>No log entries.</p></div><% } %>
+<%- include('../partials/foot', { shell }) %>

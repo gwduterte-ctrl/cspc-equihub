@@ -1,0 +1,19 @@
+<%- include('../partials/head', { title, shell, section }) %>
+<div class="section-head"><h1>Requests history</h1><a class="btn btn-sm" href="/equipments"><span class="material-icons" aria-hidden="true">add</span>New request</a></div>
+<form method="get" action="/account/requests" class="chips" aria-label="Filter by status">
+  <a class="chip <%= !status ? 'is-active' : '' %>" href="/account/requests">All</a>
+  <% statuses.forEach(function (s) { %><a class="chip <%= status === s ? 'is-active' : '' %>" href="/account/requests?status=<%= s %>"><%= statusLabel[s] %></a><% }); %>
+</form>
+<% if (items.length === 0) { %><div class="empty-state"><span class="material-icons big" aria-hidden="true">history</span><p>No requests yet.</p><a class="btn btn-sm" href="/equipments">Browse equipments</a></div>
+<% } else { %>
+<div class="table-wrap"><table>
+  <caption class="sr-only">Your borrow requests</caption>
+  <thead><tr><th scope="col">Reference</th><th scope="col">Equipment</th><th scope="col">Borrow</th><th scope="col">Return by</th><th scope="col">Status</th></tr></thead>
+  <tbody><% items.forEach(function (r) { %>
+    <tr><td><a href="/account/requests/<%= r.id %>"><%= r.reference_no %></a></td><td><%= r.equipment_name %> <span class="muted">x<%= r.quantity %></span></td>
+      <td><%= fmtDate(r.borrow_date) %></td><td><%= fmtDate(r.return_date) %><% if (r.overdue) { %> <span class="pill pill--overdue">Overdue</span><% } %></td>
+      <td><%- include('../partials/pill', { s: r.status }) %></td></tr>
+  <% }); %></tbody>
+</table></div>
+<% } %>
+<%- include('../partials/foot', { shell }) %>

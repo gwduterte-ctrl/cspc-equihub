@@ -1,0 +1,46 @@
+<%- include('../partials/head', { title, shell, section }) %>
+<div class="toolbar">
+  <div class="toolbar-form">
+    <nav class="seg" aria-label="Account type">
+      <a class="seg-i <%= role === 'user' ? 'is-active' : '' %>" href="/admin/users">Users</a>
+      <a class="seg-i <%= role === 'admin' ? 'is-active' : '' %>" href="/admin/users?role=admin">Admins</a>
+    </nav>
+    <form method="get" action="/admin/users" class="toolbar-form" role="search">
+      <% if (role === 'admin') { %><input type="hidden" name="role" value="admin"><% } %>
+      <label class="sr-only" for="q">Search</label><input id="q" type="search" name="q" value="<%= q %>" maxlength="80" placeholder="Name or e-mail"><button class="btn" type="submit">Search</button>
+    </form>
+  </div>
+  <a class="btn" href="/admin/users/new<%= role === 'admin' ? '?role=admin' : '' %>"><span class="material-icons" aria-hidden="true">add</span>Add <%= role === 'admin' ? 'admin' : 'user' %></a>
+</div>
+<% if (users.length === 0) { %><div class="empty-state dcard"><span class="material-icons big" aria-hidden="true">group</span><p>No accounts found.</p></div>
+<% } else { %>
+<div class="table-wrap"><table>
+  <caption class="sr-only"><%= role === 'admin' ? 'Admins' : 'Users' %></caption>
+  <thead><tr><th scope="col">Account</th><th scope="col">Type</th><% if (role === 'user') { %><th scope="col" class="num">Unreturned</th><th scope="col">Borrowing</th><% } %><th scope="col"><span class="sr-only">Actions</span></th></tr></thead>
+  <tbody><% users.forEach(function (u) { %>
+    <tr>
+      <td><% if (role === 'user') { %><a href="/admin/users/<%= u.id %>"><b><%= u.full_name %></b></a><% } else { %><b><%= u.full_name %></b><% } %><p class="muted small"><%= u.email %><% if (u.dept_code) { %> &middot; <%= u.dept_code %><% } %></p></td>
+      <td><%= u.user_type %></td>
+      <% if (role === 'user') { %>
+      <td class="num"><%= u.outstanding %></td>
+      <td><% if (u.is_blocked) { %><span class="pill pill--rejected">Blocked</span><p class="muted small"><%= u.block_reason %></p><% } else { %><span class="pill pill--returned">Allowed</span><% } %></td>
+      <% } %>
+      <td class="actions">
+        <% if (role === 'user') { %>
+          <% if (u.is_blocked) { %>
+            <form method="post" action="/admin/users/<%= u.id %>/unblock" class="inline"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-outline btn-sm" type="submit">Unblock</button></form>
+          <% } else { %>
+            <details class="pop"><summary class="btn btn-outline btn-sm">Block</summary>
+              <form method="post" action="/admin/users/<%= u.id %>/block" class="pop-body"><input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <label class="sr-only" for="reason-<%= u.id %>">Reason</label><input id="reason-<%= u.id %>" name="reason" maxlength="255" placeholder="Reason (required)" required>
+                <button class="btn btn-sm danger-btn" type="submit">Confirm block</button></form></details>
+          <% } %>
+        <% } %>
+        <a class="icon-btn" href="/admin/users/<%= u.id %>/edit" aria-label="Edit <%= u.full_name %>"><span class="material-icons">edit</span></a>
+        <form method="post" action="/admin/users/<%= u.id %>/delete" class="inline" data-confirm="This deletes <%= u.full_name %>&rsquo;s account and every request they made." data-confirm-title="Delete account?" data-confirm-yes="Yes, delete!" data-confirm-no="No, keep it."><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="icon-btn danger" type="submit" aria-label="Delete <%= u.full_name %>"><span class="material-icons">delete</span></button></form>
+      </td>
+    </tr>
+  <% }); %></tbody>
+</table></div>
+<% } %>
+<%- include('../partials/foot', { shell }) %>

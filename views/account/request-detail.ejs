@@ -1,0 +1,33 @@
+<%- include('../partials/head', { title, shell, section }) %>
+<a class="small back" href="/account/requests"><span class="material-icons" aria-hidden="true">chevron_left</span>Requests history</a>
+<div class="section-head"><h1><%= r.reference_no %></h1><%- include('../partials/pill', { s: r.status }) %></div>
+<%- include('../partials/errors', { errors }) %>
+<dl class="facts card pad">
+  <div><dt>Equipment</dt><dd><%= r.equipment_name %> x<%= r.quantity %></dd></div>
+  <div><dt>Borrow date</dt><dd><%= fmtDate(r.borrow_date) %></dd></div>
+  <div><dt>Return date</dt><dd><%= fmtDate(r.return_date) %><% if (r.overdue) { %> <span class="pill pill--overdue">Overdue</span><% } %></dd></div>
+  <div><dt>Purpose</dt><dd><%= r.purpose %></dd></div>
+  <div><dt>Filed</dt><dd><%= fmtDateTime(r.created_at) %></dd></div>
+  <% if (r.admin_note) { %><div><dt>Admin note</dt><dd><%= r.admin_note %></dd></div><% } %>
+</dl>
+
+<% if (r.status === 'pending') { %>
+<form method="post" action="/account/requests/<%= r.id %>/cancel" data-confirm="Your request will be cancelled and the admin will not review it." data-confirm-title="Cancel this request?" data-confirm-yes="Yes, cancel it" data-confirm-no="No, keep it."><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-outline btn-sm" type="submit">Cancel request</button></form>
+<% } %>
+
+<% if (r.status === 'approved' || r.status === 'return_submitted') { %>
+<h2>Return proof</h2>
+<% if (r.return_proof) { %>
+  <p class="muted small">Submitted. An admin will verify it.</p>
+  <div class="img-wrap proof"><img src="/account/files/proof/<%= r.id %>" alt="Your return proof photo"></div>
+<% } else { %><p class="muted small">Upload a clear photo of the equipment being returned. You can borrow again once an admin confirms it.</p><% } %>
+<form method="post" action="/account/requests/<%= r.id %>/proof" enctype="multipart/form-data" class="form card pad">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <div class="field"><label for="proof">Photo (JPG, PNG or WebP, max 3 MB)</label><input id="proof" name="proof" type="file" accept="image/jpeg,image/png,image/webp" required></div>
+  <button class="btn btn-sm" type="submit"><span class="material-icons" aria-hidden="true">upload</span><%= r.return_proof ? 'Replace photo' : 'Upload proof' %></button>
+</form>
+<% } else if (r.status === 'returned') { %>
+<p class="muted small">Returned on <%= fmtDateTime(r.returned_at) %>.</p>
+<% if (r.return_proof) { %><div class="img-wrap proof"><img src="/account/files/proof/<%= r.id %>" alt="Your return proof photo"></div><% } %>
+<% } %>
+<%- include('../partials/foot', { shell }) %>

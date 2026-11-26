@@ -1,0 +1,15 @@
+<%# Pop-up rendered by the server when someone opens/refreshes a detail or borrow URL directly.
+    The page behind it (home or equipments) is the real page, blurred. Without JavaScript the X and the backdrop are plain links. %>
+<% if (locals.popup) { %>
+<div class="modal" data-server data-close-url="<%= popup.closeUrl %>" role="dialog" aria-modal="true" aria-label="<%= popup.e.name %>">
+  <a class="modal-backdrop" href="<%= popup.closeUrl %>" data-close aria-label="Close"></a>
+  <div class="modal-panel" tabindex="-1">
+    <a class="modal-close" href="<%= popup.closeUrl %>" data-close aria-label="Close"><span class="material-icons" aria-hidden="true">close</span></a>
+    <div class="modal-body">
+      <% if (popup.type === 'detail') { %><%- include('detail-body', { e: popup.e, modal: true }) %>
+      <% } else { %><%- include('borrow-body', { e: popup.e, outstanding: popup.outstanding, errors: popup.errors, old: popup.old, today: popup.today, maxDays: popup.maxDays, modal: true }) %><% } %>
+    </div>
+  </div>
+</div>
+<% } %>
+<% if (locals.reopen) { %><div hidden data-reopen="<%= reopen %>"></div><% } %>

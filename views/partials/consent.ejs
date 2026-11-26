@@ -1,0 +1,12 @@
+<%# Privacy / cookie pop-up: centered card over the blurred page, stays until the visitor ticks the box and accepts. %>
+<% if (locals.needConsent) { %>
+<div class="dlg dlg--info is-consent" role="dialog" aria-modal="true" aria-labelledby="consent-t" aria-describedby="consent-d" data-consent-wrap>
+  <div class="dlg-backdrop"></div>
+  <div class="dlg-card is-wide" tabindex="-1">
+    <span class="dlg-ic"><span class="material-icons" aria-hidden="true">verified_user</span></span>
+    <h2 id="consent-t">Your privacy matters</h2>
+    <p id="consent-d">EquiHub collects your name, CSPC e-mail, ID number and department to manage equipment borrowing. It uses only the cookies it needs to keep you logged in &ndash; no advertising or tracking cookies.</p>
+    <%- include('consent-form') %>
+  </div>
+</div>
+<% } %>

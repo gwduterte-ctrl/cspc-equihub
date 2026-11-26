@@ -1,0 +1,25 @@
+<%- include('../partials/head', { title, shell, authAlt: { text: "Don't have an account?", label: 'Sign up', href: '/register' } }) %>
+<section class="auth-stack">
+  <div class="auth-card">
+    <img class="auth-logo" src="/img/logo-md.png" alt="CSPC EquiHub logo" width="84" height="84">
+    <h1>Welcome back</h1>
+    <p class="auth-sub">Log in to borrow equipment.</p>
+    <%- include('../partials/errors', { errors }) %>
+    <div class="errors" role="alert" data-login-error hidden><p><span class="material-icons" aria-hidden="true">error</span><span data-login-msg></span></p></div>
+    <form method="post" action="/login" class="form" novalidate data-login>
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="field"><label for="email">E-mail</label>
+        <div class="ifield"><span class="material-icons" aria-hidden="true">mail_outline</span><input id="email" name="email" type="email" maxlength="160" value="<%= old.email || '' %>" placeholder="Enter your e-mail address" autocomplete="username" required></div></div>
+      <div class="field"><label for="password">Password</label>
+        <div class="ifield"><span class="material-icons" aria-hidden="true">lock_outline</span><input id="password" name="password" type="password" maxlength="200" placeholder="Enter your password" autocomplete="current-password" required>
+          <button class="eye" type="button" data-toggle-pass aria-label="Show password"><span class="material-icons" aria-hidden="true">visibility</span></button></div></div>
+      <button class="btn btn-block" type="submit">Log in</button>
+    </form>
+    <a class="auth-link" href="/register">Create an account</a>
+  </div>
+  <% if (googleOn) { %>
+  <p class="auth-or"><span>Or continue with</span></p>
+  <a class="g-btn" href="/auth/google"><span class="g-logo" aria-hidden="true">G</span>Continue with CSPC Email</a>
+  <% } %>
+</section>
+<%- include('../partials/foot', { shell }) %>

@@ -1,0 +1,19 @@
+<%# Skeleton screen: appears only if the page takes >300ms, mirrors the site structure, removed by app.js %>
+<div class="sk-screen" id="sk-screen" aria-hidden="true">
+<% if (shell === 'admin') { %>
+  <div class="sk-admin">
+    <div class="sk-side"><i class="sk sk-logo"></i><i class="sk sk-line"></i><i class="sk sk-line"></i><i class="sk sk-line"></i><i class="sk sk-line"></i><i class="sk sk-line"></i></div>
+    <div class="sk-body"><i class="sk sk-bar"></i>
+      <div class="sk-stats"><i class="sk sk-stat"></i><i class="sk sk-stat"></i><i class="sk sk-stat"></i><i class="sk sk-stat"></i></div>
+      <i class="sk sk-panel"></i></div>
+  </div>
+<% } else { %>
+  <div class="sk-nav"><i class="sk sk-logo"></i><i class="sk sk-pill"></i><i class="sk sk-pill"></i><i class="sk sk-pill"></i></div>
+  <div class="sk-wrap">
+    <i class="sk sk-hero"></i>
+    <div class="sk-grid">
+      <% for (let i = 0; i < 4; i++) { %><div class="sk-card"><i class="sk sk-img"></i><i class="sk sk-line"></i><i class="sk sk-line short"></i></div><% } %>
+    </div>
+  </div>
+<% } %>
+</div>

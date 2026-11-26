@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#124a9c">
+  <meta name="csrf-token" content="<%= locals.csrfToken || '' %>">
+  <title><%= title ? title + ' · ' : '' %>CSPC EquiHub</title>
+  <link rel="icon" href="/img/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/vendor/material-icons/material-icons.css">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/custom.css">
+</head>
+<body class="shell-<%= shell %>">
+<% if (locals.greet) { %>
+<div class="welcome-screen" id="welcome" data-auto role="status" aria-live="polite">
+  <div class="welcome-box"><img src="/img/logo-md.png" alt="CSPC EquiHub" width="96" height="96"><div class="spinner" aria-hidden="true"></div><p class="welcome-text">Welcome to EquiHub!</p></div>
+</div>
+<% } %>
+<%- include('skeleton') %>
+<%- include('flash-dialog') %>
+<% if (shell !== 'admin') { %><%- include('consent') %><% } %>
+<a class="skip" href="#main">Skip to content</a>
+<% if (shell === 'admin') { %>
+<div class="admin">
+  <aside class="admin-side" id="admin-side">
+    <div class="side-brand">
+      <a class="side-logo" href="/admin" aria-label="CSPC EquiHub dashboard"><img src="/img/logo-md.png" alt="CSPC EquiHub" width="112" height="112"></a>
+      <b>EquiHub</b>
+      <small>Equipment Borrowing<br>Management System</small>
+    </div>
+    <nav class="side-nav" aria-label="Admin">
+      <% const links = [
+        ['dashboard','Dashboard','/admin','dashboard'], ['requests','Requests','/admin/requests','assignment'],
+        ['overdue','Overdue Returns','/admin/overdue','schedule'], ['equipment','Equipment','/admin/equipment','inventory_2'],
+        ['categories','Categories','/admin/categories','category'], ['departments','Departments','/admin/departments','school'],
+        ['users','Users','/admin/users','group'], ['homepage','Homepage Content','/admin/homepage','web'],
+        ['logs','Activity Logs','/admin/logs','receipt_long'] ]; %>
+      <% links.forEach(function (l) { %>
+        <a href="<%= l[2] %>" class="<%= locals.section === l[0] ? 'is-active' : '' %>"><span class="material-icons" aria-hidden="true"><%= l[3] %></span><span class="nav-t"><%= l[1] %></span></a>
+      <% }); %>
+      <a href="/" target="_blank" rel="noopener"><span class="material-icons" aria-hidden="true">open_in_new</span><span class="nav-t">View Website</span></a>
+    </nav>
+    <form method="post" action="/logout" class="side-out"><input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <button class="side-logout" type="submit"><span class="material-icons" aria-hidden="true">logout</span><span class="nav-t">Logout</span></button></form>
+  </aside>
+  <div class="admin-body">
+    <header class="admin-top">
+      <button class="icon-btn" type="button" data-toggle="admin-side" aria-label="Toggle menu"><span class="material-icons">menu</span></button>
+      <h1 class="admin-title"><%= title %></h1>
+      <form class="top-search" method="get" action="/admin/search" role="search">
+        <span class="material-icons" aria-hidden="true">search</span>
+        <label class="sr-only" for="adm-q">Search anything</label>
+        <input id="adm-q" type="search" name="q" maxlength="80" placeholder="Search anything...">
+      </form>
+      <a class="icon-btn has-badge" href="/admin/notifications" aria-label="Notifications<%= unread ? ' (' + unread + ' unread)' : '' %>"><span class="material-icons">notifications_none</span><% if (unread) { %><i class="badge"><%= unread > 9 ? '9+' : unread %></i><% } %></a>
+      <div class="top-user">
+        <span class="avatar" aria-hidden="true"><%= user.full_name.split(' ').map(function (w) { return w.charAt(0); }).slice(0, 2).join('').toUpperCase() %></span>
+        <div><b>Hello, <%= user.full_name.split(' ')[0] %></b><small>Equipment Office</small></div>
+      </div>
+    </header>
+    <main id="main" class="admin-main">
+<% } else { %>
+<%- include('nav') %>
+  <% if (shell === 'account') { %>
+  <div class="container account">
+    <%- include('account-side') %>
+    <main id="main" class="account-main">
+  <% } else { %>
+  <main id="main" class="<%= shell === 'auth' ? 'auth-main' : '' %>">
+  <% } %>
+<% } %>

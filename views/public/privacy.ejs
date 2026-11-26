@@ -1,0 +1,39 @@
+<%- include('../partials/head', { title, shell }) %>
+<section class="page-head"><div class="container"><h1>Privacy Notice</h1><p class="muted">How CSPC EquiHub handles your personal data, in line with the Data Privacy Act of 2012 (RA 10173).</p></div></section>
+<section class="container narrow section prose">
+  <h2>What we collect</h2>
+  <ul class="tick">
+    <li>Your full name and CSPC e-mail address.</li>
+    <li>Whether you are a student, faculty member or employee, and optionally your ID number and department.</li>
+    <li>Your borrow requests (equipment, dates, purpose), the return photos you upload, and the notifications sent to you.</li>
+    <li>An activity log of what you do on the site, including the IP address, to keep the system secure.</li>
+  </ul>
+  <h2>Why we collect it</h2>
+  <p>Only to process equipment borrowing: to know who borrowed what, to approve and track returns, to remind you about overdue items, and to protect the equipment and the system. We do not sell or share your data for advertising.</p>
+  <h2>Cookies and stored settings</h2>
+  <ul class="tick">
+    <li><b>equihub.sid</b> &ndash; keeps you logged in (strictly necessary, removed after 8 hours or when you log out).</li>
+    <li><b>hh_consent</b> &ndash; remembers that you accepted this notice (1 year).</li>
+    <li><b>hh-acc-mini</b> &ndash; remembers if you collapsed your side menu (stored in your browser only).</li>
+  </ul>
+  <p>We do not use advertising, analytics or third-party tracking cookies. If you choose Google sign-in, Google handles that login under its own privacy policy.</p>
+  <h2>Who can see your data</h2>
+  <p>You, and the equipment office administrators who manage borrowing. Return photos are stored privately and are only visible to you and the administrators.</p>
+  <h2>How long we keep it</h2>
+  <p>Account and request records are kept while your account exists. Old activity-log entries may be deleted by an administrator after 90 days.</p>
+  <h2>Your rights</h2>
+  <ul class="tick">
+    <li><b>Access</b> &ndash; download your data from your <a href="/account/profile">profile</a>.</li>
+    <li><b>Correction</b> &ndash; update your details from your profile.</li>
+    <li><b>Erasure</b> &ndash; ask the equipment office to delete your account (only possible once you have no unreturned equipment).</li>
+    <li><b>Complaint</b> &ndash; you may raise a concern with the school&rsquo;s Data Privacy Officer or the National Privacy Commission.</li>
+  </ul>
+  <% if (locals.consentPending) { %>
+  <div class="consent-inline" data-consent-wrap>
+    <h2>Do you agree?</h2>
+    <p class="muted small">Tick the box to continue using EquiHub.</p>
+    <%- include('../partials/consent-form') %>
+  </div>
+  <% } %>
+</section>
+<%- include('../partials/foot', { shell }) %>

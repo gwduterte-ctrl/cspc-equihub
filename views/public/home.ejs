@@ -1,0 +1,100 @@
+<%- include('../partials/head', { title, shell }) %>
+
+<section class="hero2">
+  <div class="hero2-photo" aria-hidden="true"><p class="script"><% site.hero_script.split(/(?<=\.)\s+/).forEach(function (w) { %><%= w %><br><% }); %></p></div>
+  <div class="hero2-panel" aria-hidden="true"></div>
+  <div class="container hero2-inner">
+    <p class="eyebrow"><%= site.hero_eyebrow %></p>
+    <h1><%= site.hero_title %> <span><%= site.hero_accent %></span></h1>
+    <p class="lead"><%= site.hero_lead %></p>
+    <div class="btn-row">
+      <a class="btn btn-light" href="#browse-equipment"><span class="material-icons" aria-hidden="true">inventory_2</span>Browse Equipment</a>
+      <a class="btn btn-line" href="#how-it-works"><span class="material-icons" aria-hidden="true">play_circle</span>How it Works</a>
+    </div>
+    <ul class="hero-chips">
+      <li><span class="material-icons" aria-hidden="true">verified_user</span>CSPC accounts only</li>
+      <li><span class="material-icons" aria-hidden="true">event_available</span>Live availability</li>
+      <li><span class="material-icons" aria-hidden="true">notifications</span>Request updates</li>
+      <li><span class="material-icons" aria-hidden="true">assignment_return</span>Easy returns</li>
+    </ul>
+  </div>
+</section>
+
+<div class="container search-wrap" id="catalog"><%- include('../partials/filters', { f, departments, categories, action }) %></div>
+
+<% if (results) { %>
+<section class="container section" id="browse-equipment" aria-labelledby="res-h">
+  <div class="section-head"><h2 id="res-h">Search results</h2><span class="muted small"><%= results.total %> found</span></div>
+  <% if (results.rows.length === 0) { %>
+    <div class="empty-state"><span class="material-icons big" aria-hidden="true">search_off</span><p>No equipment matches your search.</p><a class="btn btn-sm" href="/">Clear filters</a></div>
+  <% } else { %>
+    <div class="grid"><% results.rows.forEach(function (e) { %><%- include('../partials/equip-card', { e }) %><% }); %></div>
+    <%- include('../partials/pager', { results, f, action, qs }) %>
+  <% } %>
+</section>
+<% } %>
+
+<section class="container feats" aria-label="Why EquiHub">
+  <div class="feat"><span class="feat-ic"><span class="material-icons" aria-hidden="true">inventory_2</span></span><div><b>Wide Choices</b><p>Equipment from every department</p></div></div>
+  <div class="feat"><span class="feat-ic"><span class="material-icons" aria-hidden="true">verified</span></span><div><b>Admin Verified</b><p>Returns are checked with photo proof</p></div></div>
+  <div class="feat"><span class="feat-ic"><span class="material-icons" aria-hidden="true">lock</span></span><div><b>Secure Accounts</b><p>CSPC e-mail or Google sign-in</p></div></div>
+  <div class="feat"><span class="feat-ic"><span class="material-icons" aria-hidden="true">history</span></span><div><b>Track Everything</b><p>History, notifications and logs</p></div></div>
+</section>
+
+<section class="container how" id="how-it-works" aria-labelledby="how-h">
+  <div class="how-text">
+    <p class="eyebrow dark">How it works</p>
+    <h2 id="how-h"><%= site.how_title %> <span><%= site.how_accent %></span></h2>
+    <p class="muted"><%= site.how_lead %></p>
+    <a class="btn btn-navy" href="#browse-equipment">Browse Equipment<span class="material-icons" aria-hidden="true">arrow_forward</span></a>
+  </div>
+  <div class="slider" data-slider role="region" aria-roledescription="carousel" aria-label="How to borrow equipment">
+    <div class="slides">
+      <% [['login', 1], ['search', 2], ['edit_calendar', 3], ['assignment_return', 4]].forEach(function (st, i) { %>
+      <article class="slide <%= i === 0 ? 'is-active' : '' %>"><span class="material-icons" aria-hidden="true"><%= st[0] %></span><div><h3><%= site['step' + st[1] + '_title'] %></h3><p><%= site['step' + st[1] + '_text'] %></p></div></article>
+      <% }); %>
+    </div>
+    <div class="slider-ctrl">
+      <button class="icon-btn" type="button" data-prev aria-label="Previous slide"><span class="material-icons">chevron_left</span></button>
+      <div class="dots" data-dots></div>
+      <button class="icon-btn" type="button" data-next aria-label="Next slide"><span class="material-icons">chevron_right</span></button>
+    </div>
+  </div>
+</section>
+
+<% if (!results) { %>
+<section class="dept-band" id="browse-equipment">
+  <div class="container band-row">
+    <div><p class="eyebrow">Explore equipment</p><h2><%= site.dept_title %></h2><p class="band-p"><%= site.dept_lead %></p></div>
+    <a class="btn btn-light btn-sm" href="/equipments">View all<span class="material-icons" aria-hidden="true">arrow_forward</span></a>
+  </div>
+</section>
+<section class="container pull-up">
+  <% if (groups.length === 0) { %>
+    <div class="empty-state card"><span class="material-icons big" aria-hidden="true">inventory_2</span><p>No equipment has been listed yet.</p></div>
+  <% } %>
+  <% groups.forEach(function (g) { %>
+    <div class="dept-block">
+      <div class="dept-row"><%- include('../partials/dept-logo', { code: g.code, name: g.name, logo: g.logo }) %><h3><%= g.name %></h3><a class="small" href="/equipments?department=<%= g.id %>">View all (<%= g.count %>)</a></div>
+      <div class="grid"><% g.items.forEach(function (e) { %><%- include('../partials/equip-card', { e }) %><% }); %></div>
+    </div>
+  <% }); %>
+</section>
+<% } %>
+
+<section class="container about" id="about" aria-labelledby="about-h">
+  <img src="/img/cspc/campus.jpg" alt="CSPC main building, Camarines Sur Polytechnic Colleges" loading="lazy" data-fallback="/img/placeholder-campus.svg">
+  <div>
+    <p class="eyebrow dark">About the website</p>
+    <h2 id="about-h"><%= site.about_title %> <span><%= site.about_accent %></span></h2>
+    <p><%= site.about_text %></p>
+    <ul class="tick">
+      <li>Every request needs a borrow date, return date and purpose.</li>
+      <li>Return an item with a photo before you borrow again.</li>
+      <li>Your data is handled under the Data Privacy Act (RA 10173).</li>
+    </ul>
+    <a class="btn btn-outline btn-sm" href="/about">Learn more<span class="material-icons" aria-hidden="true">arrow_forward</span></a>
+  </div>
+</section>
+<%- include('../partials/popup') %>
+<%- include('../partials/foot', { shell }) %>

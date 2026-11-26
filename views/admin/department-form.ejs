@@ -1,0 +1,35 @@
+<%- include('../partials/head', { title, shell, section }) %>
+<%- include('../partials/errors', { errors }) %>
+<div class="cat-form-wrap card pad">
+  <form method="post" action="<%= d.id ? '/admin/departments/' + d.id : '/admin/departments' %>" enctype="multipart/form-data" novalidate>
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <div class="cat-form-layout">
+
+      <div class="cat-form-fields form">
+        <div class="row2">
+          <div class="field"><label for="code">Code</label><input id="code" name="code" maxlength="10" value="<%= d.code %>" placeholder="CCS" required></div>
+          <div class="field"><label for="name">Department name</label><input id="name" name="name" maxlength="120" value="<%= d.name %>" required></div>
+        </div>
+        <div class="field"><label for="dept-logo-input">Logo <span class="muted">(JPG, PNG, WebP, max 3 MB — square works best)</span></label>
+          <input id="dept-logo-input" name="logo" type="file" accept="image/jpeg,image/png,image/webp"></div>
+        <div class="btn-row"><button class="btn btn-sm" type="submit">Save</button><a class="btn btn-ghost btn-sm" href="/admin/departments">Cancel</a></div>
+      </div>
+
+      <div class="cat-form-preview">
+        <p class="cat-preview-label">Logo preview</p>
+        <div class="cat-preview-box">
+          <img id="dept-logo-preview"
+            src="<%= d.logo ? '/uploads/departments/' + d.logo : '' %>"
+            alt="Department logo preview"
+            <% if (!d.logo) { %>hidden<% } %>>
+          <span id="dept-logo-placeholder" class="cat-preview-empty" <% if (d.logo) { %>hidden<% } %>>
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <span>No logo selected</span>
+          </span>
+        </div>
+      </div>
+
+    </div>
+  </form>
+</div>
+<%- include('../partials/foot', { shell }) %>
